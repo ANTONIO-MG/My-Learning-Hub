@@ -1,18 +1,6 @@
 """
 URL configuration for MY_LEARNING_HUB project.
 
-The `urlpatterns` list routes URLs to views. For more information please see:
-    https://docs.djangoproject.com/en/5.0/topics/http/urls/
-Examples:
-Function views
-    1. Add an import:  from my_app import views
-    2. Add a URL to urlpatterns:  path('', views.home, name='home')
-Class-based views
-    1. Add an import:  from other_app.views import Home
-    2. Add a URL to urlpatterns:  path('', Home.as_view(), name='home')
-Including another URLconf
-    1. Import the include() function: from django.urls import include, path
-    2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
 from django.urls import path
@@ -20,8 +8,13 @@ from django.conf.urls.static import static
 from base import views
 from MY_LEARNING_HUB import settings
 
+# added the static files to be able to load the files under the static folder
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('demo/', views.showDemoPage),
+    path('home/', views.showDashboard),
+    path('', views.loginPage),
+    path('DoLogin', views.doLogin),
+    path('get_user_details', views.getUserDetails),
+    path('logout_user', views.logOut),
     
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)+static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

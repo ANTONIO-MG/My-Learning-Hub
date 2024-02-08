@@ -1,4 +1,3 @@
-from django.db import models
 """ models that represent the data for each user and function of the management application
 
 Course:
@@ -102,8 +101,15 @@ message:
 """
 
 # bellow are the list of classes that map data to teh database
-
+from django.contrib.auth.models import AbstractUser
 from django.db import models
+from django.db import models
+from django.dispatch import receiver
+from django.db.models.signals import post_save
+
+class CustomUser(AbstractUser):
+    user_type = ((1, "HOD"), (2, "Educator"), (3, "Student"), (4, "Parent"))
+    user_data = models.CharField(default=1, choices=user_type, max_length=10)
 
 
 class Course(models.Model):
@@ -114,8 +120,7 @@ class Course(models.Model):
 
 class Student(models.Model):
     id = models.BigAutoField(primary_key=True)
-    name = models.CharField(max_length=255)
-    surname = models.CharField(max_length=255)
+    admin = models.OneToOneField(CustomUser, on_delete=models.CASCADE)
     gender = models.CharField(max_length=10)
     student_number = models.CharField(max_length=20, unique=True)
     race = models.CharField(max_length=50)
@@ -124,6 +129,8 @@ class Student(models.Model):
     id_number = models.CharField(max_length=13, unique=True)
     contact_number = models.CharField(max_length=15)
     emergency_contact = models.CharField(max_length=15)
+    academic_year_start = models.DateField()
+    academic_year_end = models.DateField()
     home_language = models.CharField(max_length=50)
     merits = models.PositiveIntegerField()
     disability = models.CharField(max_length=100, blank=True, null=True)
@@ -132,7 +139,6 @@ class Student(models.Model):
     reports = models.ManyToManyField('Report', related_name='students')
     profile_picture = models.ImageField(
         upload_to='profile_pics/', null=True, blank=True)
-    password = models.CharField(max_length=255)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     course = models.ForeignKey(Course, on_delete=models.CASCADE)
@@ -140,8 +146,7 @@ class Student(models.Model):
 
 class Educator(models.Model):
     id = models.BigAutoField(primary_key=True)
-    name = models.CharField(max_length=255)
-    surname = models.CharField(max_length=255)
+    admin = models.OneToOneField(CustomUser, on_delete=models.CASCADE)
     gender = models.CharField(max_length=10)
     staff_number = models.CharField(max_length=20, unique=True)
     race = models.CharField(max_length=50)
@@ -151,22 +156,18 @@ class Educator(models.Model):
     contact_number = models.CharField(max_length=15)
     home_language = models.CharField(max_length=50)
     disability = models.CharField(max_length=100, blank=True, null=True)
-    email = models.EmailField(unique=True)
     profile_picture = models.ImageField(
         upload_to='profile_pics/', null=True, blank=True)
-    password = models.CharField(max_length=255)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
 
 class Admin_HOD(models.Model):
     id = models.BigAutoField(primary_key=True)
-    name = models.CharField(max_length=255)
-    surname = models.CharField(max_length=255)
+    admin = models.OneToOneField(CustomUser, on_delete=models.CASCADE)
     staff_number = models.CharField(max_length=20, unique=True)
     id_number = models.CharField(max_length=13, unique=True)
     contact_number = models.CharField(max_length=15)
-    email = models.EmailField(unique=True)
     profile_picture = models.ImageField(
         upload_to='profile_pics/', null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -175,8 +176,7 @@ class Admin_HOD(models.Model):
 
 class Parent(models.Model):
     id = models.BigAutoField(primary_key=True)
-    name = models.CharField(max_length=255)
-    surname = models.CharField(max_length=255)
+    admin = models.OneToOneField(CustomUser, on_delete=models.CASCADE)
     gender = models.CharField(max_length=10)
     id_number = models.CharField(max_length=13, unique=True)
     contact_number = models.CharField(max_length=15)
@@ -214,4 +214,27 @@ class Report(models.Model):
     picture = models.ImageField(upload_to='report_pics/', null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    
+@receiver(post_save, sender=CustomUser)
+def create_user_profile(sender, instance, created, **kwargs):
+    if created:
+        if instance.user_data == 1:
+            Admin_HOD.objects.create(admin=instance)
+        if instance.user_type == 2:
+            Educator.objects.create(admin=instance)
+        if instance.user_type == 3:
+            Student.objects.create(admin=instance)
+        if instance.user_type == 4:
+            Parent.objects.create(admin=instance)
+            
 
+@receiver(post_save, sender=CustomUser)
+def create_user_profile(sender, instance, **kwargs):
+    if instance.user_type == 1:
+        instance.Admin_HOD.save()
+    if instance.user_type == 2:
+        instance.Educator.save
+    if instance.user_type == 3:
+        instance.Student.save()
+    if instance.user_type == 4:
+        instance.Parent.save()
