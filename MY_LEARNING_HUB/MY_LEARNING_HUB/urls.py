@@ -16,5 +16,9 @@ urlpatterns = [
     path('DoLogin', views.doLogin),
     path('get_user_details', views.getUserDetails),
     path('logout_user', views.logOut),
+    path('base', views.baseHtml),
+    path('add_educator', views.addEducator),
+    path('add_student', views.addStudent),
+    path('add_course', views.addCourse),
     
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)+static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
