@@ -1,5 +1,7 @@
 from django.contrib import admin
+from .models import Classroom, Notification, Message, TODO
 
-# Register your models here.
-
-from django.contrib.auth.admin import UserAdmin
+admin.site.register(Classroom)
+admin.site.register(Notification)
+admin.site.register(Message)
+admin.site.register(TODO)

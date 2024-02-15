@@ -1,10 +1,7 @@
-from django.contrib.auth.forms import UserCreationForm
-from django import forms
-from django.forms import ModelForm
-from django.contrib.auth.models import User
+from django.forms import  ModelForm
+from .models import Classroom
 
-class CreateUserForm(UserCreationForm):
-    class meta:
-        model = User
-        fields = ['username', 'email', 'password1','password2']
-          
+class  ClassRoomForm(ModelForm):
+    class Meta:
+        model = Classroom
+        fields = '__all__'
