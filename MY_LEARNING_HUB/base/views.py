@@ -1,56 +1,46 @@
 from django.shortcuts import render
 from django.http import HttpResponseRedirect, HttpResponse
-from .email_back_end import EmailBackEnd
-from django.contrib.auth import authenticate, login, logout
-# from django.core.checks import messages
-from django.contrib import messages
+# from django.contrib.auth import authenticate, login, logout
+# from django.contrib import messages
+# from django.contrib.auth.forms import UserCreationForm
+# from django.forms import ModelForm
+# from .models import *
+# from .forms import CreateUserForm
 
 
-# the view that shows the current da   shboard
-def showDashboard(request):
-    return  render(request, 'home.html')
+# the view that shows the current dashboard
+def Dashboard(request):
+    return  HttpResponse("Dashboard Page")
 
 # the view for the login page
-def loginPage(request):
-    return  render(request,'login.html')
+def Login(request):
+    return HttpResponse("Login Page")
 
 # the view for the landing page after login
-def doLogin(request):
-    if request.method != "POST":
-        return HttpResponse("<h2>NOT ALLOWED</h2>")
-    else:
-        user = EmailBackEnd.authenticate(request, username=request.POST.get("email"), password=request.POST.get("password"))
-        if user != None:
-            login(request, user)
-            return render(request, 'home.html')
-        else:
-            messages.error(request, "Invalid Login Details")
-            return HttpResponseRedirect("/")
 
-def  logoutUser(request):
-    pass
+def Logout(request):
+    return HttpResponse("Logout Re-direct Page")
 
-# function that returns the logged in user details
-def getUserDetails(request):
-    if request.user != None:
-        return HttpResponse("User : "+request.user.email+" usertype : "+" Password : "+request.user.user_type)
-    else:
-        return HttpResponse("Please Login first")
 
-# logs out the current user
-def logOut(request):
-    logout(request)
-    return HttpResponseRedirect("/")
+def Register(request):
+    return HttpResponse("Register Page")
 
-def baseHtml(request):
-    return  render(request,"home.html")
 
-# the adding secction with forms
-def addEducator(request):
-    return  render(request, "add_educator.html")
+def MyClass(request):
+    return HttpResponse("Classroom chat Page")
 
-def addStudent(request):
-    return render(request, "add_student.html")
 
-def addCourse(request):
-    return render(request, "add_course.html")
+def ToDo(request):
+    return HttpResponse("TODO app")
+
+
+def Report(request):
+    return HttpResponse("Report Page")
+
+
+def About(request):
+    return HttpResponse("About School Page")
+
+
+def Contact(request):
+    return HttpResponse("Contact Us Page")

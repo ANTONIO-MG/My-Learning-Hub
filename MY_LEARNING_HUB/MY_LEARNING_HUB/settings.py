@@ -117,5 +117,3 @@ MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 # Default primary key field type
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-AUTH_USER_MODEL = "base.CustomUser"  # <-- this is the important line to set custom user model path
-AUTHENTICATION_BACKENDS= ["base.email_back_end.EmailBackEnd"]

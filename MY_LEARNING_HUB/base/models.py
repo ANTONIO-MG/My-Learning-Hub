@@ -101,61 +101,71 @@ message:
 """
 
 # bellow are the list of classes that map data to teh database
-from django.contrib.auth.models import AbstractUser
+
 from django.db import models
-from django.db import models
-from django.dispatch import receiver
-from django.db.models.signals import post_save
 
-class CustomUser(AbstractUser):
-    user_type = ((1, "HOD"), (2, "Educator"), (3, "Student"), (4, "Parent"))
-    user_data = models.CharField(default=1, choices=user_type, max_length=10)
-
-
-class Course(models.Model):
-    id = models.BigAutoField(primary_key=True)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
+GENDER_CHOICES = [
+        ('Non', 'Non'),
+        ('Male', 'Male'),
+        ('Female', 'Female'),
+    ]
+Race = [
+        ('Asian', 'Asian'),
+        ('Black', 'Black'),
+        ('White', 'White'),
+        ('Hispanic', 'Hispanic'),
+        ('Other', 'Other'),
+    ]
+Notification_Groups = [
+    ('educators', 'educators'),
+    ('students', 'students'),
+    ('all', 'all'),
+]
+# class Course(models.Model):
+#     id = models.BigAutoField(primary_key=True)
+#     created_at = models.DateTimeField(auto_now_add=True)
+#     updated_at = models.DateTimeField(auto_now=True)
 
 
 class Student(models.Model):
     id = models.BigAutoField(primary_key=True)
-    admin = models.OneToOneField(CustomUser, on_delete=models.CASCADE)
-    gender = models.CharField(max_length=10)
+    first_name = models.CharField(max_length=50, default="first name")
+    last_name = models.CharField(max_length=50, default="last name")
+    email = models.EmailField(unique=True, blank=True, null=True)
+    gender = models.CharField(
+        max_length=10, choices=GENDER_CHOICES, default='Non')
     student_number = models.CharField(max_length=20, unique=True)
-    race = models.CharField(max_length=50)
-    citizenship = models.CharField(max_length=50)
+    race = models.CharField(
+        max_length=50, choices=Race, default='Other')
+    citizenship = models.CharField(max_length=25)
     date_of_birth = models.DateField()
-    id_number = models.CharField(max_length=13, unique=True)
+    id_number = models.CharField(max_length=15, unique=True)
     contact_number = models.CharField(max_length=15)
     emergency_contact = models.CharField(max_length=15)
-    academic_year_start = models.DateField()
-    academic_year_end = models.DateField()
     home_language = models.CharField(max_length=50)
-    merits = models.PositiveIntegerField()
-    disability = models.CharField(max_length=100, blank=True, null=True)
     status = models.CharField(max_length=20)
-    parents = models.ManyToManyField('Parent', related_name='children')
-    reports = models.ManyToManyField('Report', related_name='students')
     profile_picture = models.ImageField(
         upload_to='profile_pics/', null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    course = models.ForeignKey(Course, on_delete=models.CASCADE)
+
 
 
 class Educator(models.Model):
     id = models.BigAutoField(primary_key=True)
-    admin = models.OneToOneField(CustomUser, on_delete=models.CASCADE)
-    gender = models.CharField(max_length=10)
+    first_name = models.CharField(max_length=50, default="first name")
+    last_name = models.CharField(max_length=50, default="last name")
+    email = models.EmailField(unique=True, blank=True, null=True)
+    gender = models.CharField(
+        max_length=10, choices=GENDER_CHOICES, default='Non')
+    race = models.CharField(
+        max_length=50, choices=Race, default='Other')
     staff_number = models.CharField(max_length=20, unique=True)
-    race = models.CharField(max_length=50)
-    citizenship = models.CharField(max_length=50)
+    citizenship = models.CharField(max_length=25)
     date_of_birth = models.DateField()
     id_number = models.CharField(max_length=13, unique=True)
     contact_number = models.CharField(max_length=15)
     home_language = models.CharField(max_length=50)
-    disability = models.CharField(max_length=100, blank=True, null=True)
     profile_picture = models.ImageField(
         upload_to='profile_pics/', null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -164,7 +174,13 @@ class Educator(models.Model):
 
 class Admin_HOD(models.Model):
     id = models.BigAutoField(primary_key=True)
-    admin = models.OneToOneField(CustomUser, on_delete=models.CASCADE)
+    first_name = models.CharField(max_length=50, default="first name")
+    last_name = models.CharField(max_length=50, default="last name")
+    email = models.EmailField(unique=True, blank=True, null=True)
+    gender = models.CharField(
+        max_length=10, choices=GENDER_CHOICES, default='Non')
+    race = models.CharField(
+        max_length=50, choices=Race, default='Other')
     staff_number = models.CharField(max_length=20, unique=True)
     id_number = models.CharField(max_length=13, unique=True)
     contact_number = models.CharField(max_length=15)
@@ -176,11 +192,15 @@ class Admin_HOD(models.Model):
 
 class Parent(models.Model):
     id = models.BigAutoField(primary_key=True)
-    admin = models.OneToOneField(CustomUser, on_delete=models.CASCADE)
-    gender = models.CharField(max_length=10)
+    first_name = models.CharField(max_length=50, default="first name")
+    last_name = models.CharField(max_length=50, default="last name")
+    gender = models.CharField(
+        max_length=10, choices=GENDER_CHOICES, default='Non')
+    race = models.CharField(
+        max_length=50, choices=Race, default='Other')
     id_number = models.CharField(max_length=13, unique=True)
     contact_number = models.CharField(max_length=15)
-    email = models.EmailField(unique=True)
+    email = models.EmailField(unique=True, blank=True, null=True)
     profile_picture = models.ImageField(
         upload_to='profile_pics/', null=True, blank=True)
     password = models.CharField(max_length=255)
@@ -188,54 +208,28 @@ class Parent(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
 
-class Subject(models.Model):
-    subject_name = models.CharField(max_length=255)
-    course = models.ForeignKey(Course, on_delete=models.CASCADE)
-    educator = models.ForeignKey(Educator, on_delete=models.CASCADE)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
+# class Subject(models.Model):
+#     subject_name = models.CharField(max_length=255)
+#     course = models.ForeignKey(Course, on_delete=models.CASCADE)
+#     course = models.ForeignKey(Course, on_delete=models.CASCADE)
+#     educator = models.ForeignKey(Educator, on_delete=models.CASCADE)
+#     created_at = models.DateTimeField(auto_now_add=True)
+#     updated_at = models.DateTimeField(auto_now=True)
 
 
 class Notification(models.Model):
     id = models.BigAutoField(primary_key=True)
-    student = models.ForeignKey(Student, on_delete=models.CASCADE)
-    course = models.ForeignKey(Course, on_delete=models.CASCADE)
-    educator = models.ForeignKey(Educator, on_delete=models.CASCADE)
-    parent = models.ForeignKey(Parent, on_delete=models.CASCADE)
+    intended_for = models.CharField(max_length=50, choices=Notification_Groups, default='all')
     message = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
-class Report(models.Model):
-    student = models.ForeignKey(Student, on_delete=models.CASCADE)
-    course = models.ForeignKey(Course, on_delete=models.CASCADE)
-    educator = models.ForeignKey(Educator, on_delete=models.CASCADE)
-    summary = models.TextField(blank=True, null=True)
-    grades_list = models.JSONField(blank=True, null=True)
-    picture = models.ImageField(upload_to='report_pics/', null=True, blank=True)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-    
-@receiver(post_save, sender=CustomUser)
-def create_user_profile(sender, instance, created, **kwargs):
-    if created:
-        if instance.user_data == 1:
-            Admin_HOD.objects.create(admin=instance)
-        if instance.user_type == 2:
-            Educator.objects.create(admin=instance)
-        if instance.user_type == 3:
-            Student.objects.create(admin=instance)
-        if instance.user_type == 4:
-            Parent.objects.create(admin=instance)
-            
-
-@receiver(post_save, sender=CustomUser)
-def create_user_profile(sender, instance, **kwargs):
-    if instance.user_type == 1:
-        instance.Admin_HOD.save()
-    if instance.user_type == 2:
-        instance.Educator.save
-    if instance.user_type == 3:
-        instance.Student.save()
-    if instance.user_type == 4:
-        instance.Parent.save()
+# class Report(models.Model):
+#     student = models.ForeignKey(Student, on_delete=models.CASCADE)
+#     course = models.ForeignKey(Course, on_delete=models.CASCADE)
+#     educator = models.ForeignKey(Educator, on_delete=models.CASCADE)
+#     summary = models.TextField(blank=True, null=True)
+#     grades_list = models.JSONField(blank=True, null=True)
+#     picture = models.ImageField(upload_to='report_pics/', null=True, blank=True)
+#     created_at = models.DateTimeField(auto_now_add=True)
+#     updated_at = models.DateTimeField(auto_now=True)
