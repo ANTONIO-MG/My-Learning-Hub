@@ -1,0 +1,22 @@
+{% block content %}
+
+{% if messages %}
+<ul class="messages">
+    {% for message in messages %}
+    <li>{{ message }}</li>
+        {% endfor %}
+</ul>
+{% endif %}
+
+<form action="" method="POST">
+    {% csrf_token %}
+    {{form.as_p}}
+
+    <label for="">Username</label>
+    <input type="text" name="username" placeholder="Enter Username">
+    <label for="">Password </label>
+    <input type="Password" name="password" placeholder="Enter Password">
+    <input type="submit" value="Login">
+</form>
+
+{% endblock content %}

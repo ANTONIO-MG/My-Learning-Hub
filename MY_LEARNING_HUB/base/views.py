@@ -1,15 +1,13 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponseRedirect, HttpResponse
-# from django.contrib.auth import authenticate, login, logout
-# from django.contrib import messages
-# from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth import authenticate, login, logout
+from django.contrib import messages
 from .forms import ClassRoomForm, MessageForm, NotificationForm, TodoForm
 from .models import Classroom, Notification, TODO, Message
-# from .forms import CreateUserForm
+from django.contrib.auth.models import User
 
 
  
-
 # the view that shows the current dashboard
 def Home(request):
     classrooms = Classroom.objects.all()
@@ -21,11 +19,33 @@ def Home(request):
 
 # the view for the login page
 def Login(request):
-    return HttpResponse("Login Page")
+    # chat that teh request method is post providing some data
+    if request.method == 'POST':
+        # collect the specific field dates from the  form
+        username =  request.POST['username']
+        password =  request.POST['password']
+        
+        try:
+            # check if the user already exists in your database by the given field
+            user = User.objects.get(username=username)
+        except:
+            # if the user  does not exist display a message
+            messages.error(request, "Username does not exist")
+        # if the user does exist then go ahead and authenticate   
+        user = authenticate(request, username=username, password=password)
+        # finally, login te user and and return the home page
+        if user is not None:
+            login(request, user)
+            return redirect('home')
+        else:
+            messages.error(request, "Username or password incorrect")
+    context = {}
+    return render(request, "login_register.html", context)
 
-# the view for the landing page after login
+# logs you out of the session, this will be on teh nav bar
 def Logout(request):
-    return HttpResponse("Logout Re-direct Page")
+    logout(request)
+    return redirect('home')
 
 
 def Register(request):
