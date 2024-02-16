@@ -1,0 +1,77 @@
+<h1>Dashboard Here</h1>
+
+<style>
+    .home-container{
+        display: grid;
+        grid-template-columns: 1fr 3fr;
+    }
+</style>
+<div class="home-container ">
+
+        <div>
+            <h1>
+                Messages
+            </h1>
+            <h2>
+                <a href="{% url 'send_message' %}">send Message</a>
+            </h2>
+            <hr>
+            {% for message in messages %}
+            <div>
+                <h2>
+                    {{message.content}}
+                </h2>
+                <a href="{% url 'edit_message' message.id %}">Edit</a>
+                <a href="{% url 'delete_message' message.id %}">Delete</a>
+                <span>
+                    @{{ message.user}}
+                </span>
+                <hr>
+            </div>
+            {% endfor %}
+        </div>
+        <div>
+            <h1>
+                Classrooms
+            </h1>
+            <h2>
+                <a href="{% url 'create_classroom' %}">Create Classroom</a>
+            </h2>
+            <hr>
+            {% for class in classrooms %}
+            <div>
+                <h2>
+                    {{class.id}} - <a href="{% url 'class' class.id %}"> {{class.name}} </a>
+                </h2>
+                <span>
+                    @{{ class.class_teacher}}
+                </span>
+                <a href="{% url 'update_classroom' class.id %}">Edit</a>
+                <a href="{% url 'delete_classroom' class.id %}">Delete</a>
+                <hr>
+            </div>
+            {% endfor %}
+        </div>
+        <div>
+            <h1>Notifications</h1>
+            <h2>
+                <a href="{% url 'send_notification' %}">Create Notification</a>
+            </h2>
+            <hr>
+            {% for notice in notification %}
+            <div>
+                <h2>
+                    @{{notice.user}} - <a href="{% url 'notice' notice.id %}"> {{notice.title}}</a>
+                </h2>
+                <a href="{% url 'edit_notification' notice.id %}">Edit</a>
+                <a href="{% url 'delete_notification' notice.id %}">Delete</a>
+                <hr>
+            </div>
+            {% endfor %}
+        </div>
+        <div>
+            <h1>
+                TODO
+            </h1>
+        </div>
+</div>

@@ -3,7 +3,7 @@ from django.http import HttpResponseRedirect, HttpResponse
 # from django.contrib.auth import authenticate, login, logout
 # from django.contrib import messages
 # from django.contrib.auth.forms import UserCreationForm
-from .forms import ClassRoomForm
+from .forms import ClassRoomForm, MessageForm, NotificationForm, TodoForm
 from .models import Classroom, Notification, TODO, Message
 # from .forms import CreateUserForm
 
@@ -11,17 +11,19 @@ from .models import Classroom, Notification, TODO, Message
  
 
 # the view that shows the current dashboard
-def Dashboard(request):
+def Home(request):
     classrooms = Classroom.objects.all()
-    context = {"classrooms": classrooms}
-    return  render(request, 'dashboard.html', context)
+    messages = Message.objects.all()
+    notification = Notification.objects.all()
+    tasks = TODO.objects.all()
+    context = {"classrooms": classrooms, "messages" : messages, "notification" : notification, "tasks": tasks}
+    return  render(request, 'home.html', context)
 
 # the view for the login page
 def Login(request):
     return HttpResponse("Login Page")
 
 # the view for the landing page after login
-
 def Logout(request):
     return HttpResponse("Logout Re-direct Page")
 
@@ -33,15 +35,21 @@ def Register(request):
 def MyClass(request, pk):
     # create an instance of the of the specific classroom ou want to show using the pk
     classrooms = Classroom.objects.get(id=pk)
-    # pass the context to be rendered on teh page
+    # pass the context to be rendered on the page
     context = {"classrooms": classrooms}
     return render(request, 'class.html', context)
 
 
 def ToDo(request):
-    classrooms = Classroom.objects.all()
-    context = {"classrooms": classrooms}
-    return HttpResponse("TODO app")
+    todo = TODO.objects.all()
+    context = {"todo": todo}
+    return render(request, 'home.html', context)
+
+
+def MyNotification(request):
+    notice = Notification.objects.all()
+    context = {"notice": notice}
+    return render(request, 'home.html', context)
 
 
 def Report(request):
@@ -66,7 +74,7 @@ def CreateClassroom(request):
         if  form.is_valid():
             form.save()
             # on success we redirect you back to teh Home page
-            return redirect('dashboard')
+            return redirect('home')
     
     context = {'form': form}
     return render(request, 'classroom_form.html', context)
@@ -81,7 +89,7 @@ def UpdateClassroom(request, pk):
         if form.is_valid():
             form.save()
             # on success we redirect you back to teh Home page
-            return redirect('dashboard')
+            return redirect('home')
     
     context = {'form': form}
     return render(request, 'classroom_form.html', context)
@@ -92,7 +100,81 @@ def DeleteClassroom(request, pk):
     room = Classroom.objects.get(id=pk)
     if request.method == "POST":
         room.delete()
-        return redirect('dashboard')
+        return redirect('home')
 
-    return render(request, 'delete.html', {'obj': room})
+    return render(request, 'delete_classroom.html', {'obj': room})
  
+ 
+def SendMessage(request):
+    form = MessageForm
+    if request.method == "POST":
+        form = MessageForm(request.POST)
+        if  form.is_valid():
+            form.save()
+            return redirect('home')
+    
+    context = {'form': form}
+    return render(request, 'message_form.html', context)
+
+def EditMessage(request, pk):
+    form = Message.objects.get(id=pk)
+    form = MessageForm(instance=form)
+    if request.method == "POST":
+        form = MessageForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('home')
+    
+    context = {'form': form}
+    return render(request, 'message_form.html', context)
+
+
+def DeleteMessage(request, pk):
+    message = Message.objects.get(id=pk)
+    if request.method == "POST":
+        message.delete()
+        return redirect('home')
+
+    return render(request, 'delete_message.html', {'obj': message})
+
+
+def SendNotification(request):
+    form = NotificationForm
+    if request.method == "POST":
+        form = NotificationForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('home')
+
+    context = {'form': form}
+    return render(request, 'notification_form.html', context)
+
+
+def EditNotification(request, pk):
+    form = Notification.objects.get(id=pk)
+    form = NotificationForm(instance=form)
+    if request.method == "POST":
+        form = NotificationForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('home')
+
+    context = {'form': form}
+    return render(request, 'notification_form.html', context)
+
+
+def DeleteNotification(request, pk):
+    notification = Notification.objects.get(id=pk)
+    if request.method == "POST":
+        notification.delete()
+        return redirect('home')
+
+    return render(request, 'delete_notification.html', {'obj': notification})
+
+
+def MyNotice(request, pk):
+    # create an instance of the of the specific notification ou want to show using the pk
+    notification = Notification.objects.get(id=pk)
+    # pass the context to be rendered on the page
+    context = {"notification": notification}
+    return render(request, 'notice.html', context)
