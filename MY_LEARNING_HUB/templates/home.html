@@ -3,7 +3,7 @@
 <style>
     .home-container{
         display: grid;
-        grid-template-columns: 1fr 3fr;
+        grid-template-columns: 1fr 1fr;
     }
 </style>
 <div class="home-container ">
@@ -71,7 +71,21 @@
         </div>
         <div>
             <h1>
-                TODO
+                TODO List
             </h1>
+            <h2>
+                <a href="{% url 'create_task' %}">Create Task</a>
+            </h2>
+            <hr>
+            {% for task in tasks %}
+            <div>
+                <h2>
+                    {{task.description}} - <a href="{% url 'task' task.id %}"> {{task.title}} </a>
+                </h2>
+                <a href="{% url 'edit_task' task.id %}">Edit</a>
+                <a href="{% url 'delete_task' task.id %}">Delete</a>
+                <hr>
+            </div>
+            {% endfor %}
         </div>
 </div>

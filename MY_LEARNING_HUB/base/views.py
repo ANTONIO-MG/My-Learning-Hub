@@ -178,3 +178,47 @@ def MyNotice(request, pk):
     # pass the context to be rendered on the page
     context = {"notification": notification}
     return render(request, 'notice.html', context)
+
+
+# ------------------------------------>
+
+def CreateTask(request):
+    form = TodoForm
+    if request.method == "POST":
+        form = TodoForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('home')
+
+    context = {'form': form}
+    return render(request, 'todo_form.html', context)
+
+
+def EditTask(request, pk):
+    form = TODO.objects.get(id=pk)
+    form = TodoForm(instance=form)
+    if request.method == "POST":
+        form = TodoForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('home')
+
+    context = {'form': form}
+    return render(request, 'todo_form.html', context)
+
+
+def DeleteTask(request, pk):
+    tasks = TODO.objects.get(id=pk)
+    if request.method == "POST":
+        tasks.delete()
+        return redirect('home')
+
+    return render(request, 'delete_task.html', {'obj': tasks})
+
+
+def MyTask(request, pk):
+    # create an instance of the of the specific notification ou want to show using the pk
+    tasks = TODO.objects.get(id=pk)
+    # pass the context to be rendered on the page
+    context = {"tasks": tasks}
+    return render(request, 'todo.html', context)

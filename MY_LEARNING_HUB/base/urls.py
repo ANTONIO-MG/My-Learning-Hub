@@ -21,4 +21,8 @@ urlpatterns = [
     path('edit_notification/<str:pk>/', views.EditNotification, name="edit_notification"),
     path('delete_notification/<str:pk>/', views.DeleteNotification, name="delete_notification"),
     path('notice/<str:pk>', views.MyNotice, name="notice"),
+    path('create_task/', views.CreateTask, name="create_task"),
+    path('edit_task/<str:pk>/', views.EditTask, name="edit_task"),
+    path('delete_task/<str:pk>/', views.DeleteTask, name="delete_task"),
+    path('task/<str:pk>', views.MyTask, name="task"),
 ] 
