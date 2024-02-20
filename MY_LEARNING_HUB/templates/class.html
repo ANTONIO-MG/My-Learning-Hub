@@ -1,5 +1,13 @@
-<h1>Classroom Here</h1>
+<h1>{{classrooms.name}}</h1>
 <div>
     <h3>{{ classrooms.description}}</h3>
-    <a href="{{request.META.HTTP_REFERER}}">close</a>
 </div>
+<div class="comment-wrapper">
+    <h3>Conversations</h3>
+    {% for  subject in subjects %}
+    <a href="{% url 'subject' subject.id %}">
+        <h4>{{subject.title}}</h4>
+    </a>
+    {% endfor %}
+</div>
+<a href="{{request.META.HTTP_REFERER}}">close</a>

@@ -105,53 +105,85 @@ message:
 from django.db import models
 from django.contrib.auth.models import User
 
-# GENDER_CHOICES = [
-#         ('Non', 'Non'),
-#         ('Male', 'Male'),
-#         ('Female', 'Female'),
-#     ]
-# Race = [
-#         ('Asian', 'Asian'),
-#         ('Black', 'Black'),
-#         ('White', 'White'),
-#         ('Hispanic', 'Hispanic'),
-#         ('Other', 'Other'),
-#     ]
-# Notification_Groups = [
-#     ('educators', 'educators'),
-#     ('students', 'students'),
-#     ('all', 'all'),
-# ]
-
-TASK_STATUS = [
-    (0, "Not Started"),  # Not started yet
-    (1, "In Progress"),   # Currently working on it
-    (2, "Completed"),      # Finished
+GENDER_CHOICES = [
+        ('Male', 'Male'),
+        ('Female', 'Female'),
+    ]
+Race = [
+        ('Asian', 'Asian'),
+        ('Black', 'Black'),
+        ('White', 'White'),
+        ('Hispanic', 'Hispanic'),
+        ('Other', 'Other'),
+    ]
+Notification_Groups = [
+    ('educators', 'educators'),
+    ('students', 'students'),
+    ('classroom', 'classroom'),
+    ('subject', 'subject'),
+    ('all', 'all'),
 ]
+
+user_type = [
+    ("Student", "Student"),
+    ("Educator", "Educator"),
+]
+
+
+class Person(models.Model):
+    user = models.OneToOneField(User, primary_key=True, on_delete=models.CASCADE)
+    first_name = models.CharField(max_length=50, default="first name")
+    last_name = models.CharField(max_length=50, default="last name")
+    email = models.EmailField(unique=True, blank=True, null=True)
+    gender = models.CharField(max_length=10, choices=GENDER_CHOICES)
+    race = models.CharField(
+        max_length=50, choices=Race, default='Other')
+    date_of_birth = models.DateField()
+    contact_number = models.CharField(max_length=15)
+    emergency_contact = models.CharField(max_length=15)
+    subjects = models.ManyToManyField('Subject', blank=True)
+    profile_picture = models.ImageField(
+        upload_to='profile_pics/', null=True, blank=True)
+    user_category = models.CharField(max_length=10, choices=user_type)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    
+    class Meta:
+        ordering = ['-updated_at', '-created_at']
+
+    def __str__(self):
+        return str(self.first_name  + " " + self.last_name)
 
 
 class Classroom(models.Model):
     name = models.CharField(max_length=255)
     class_teacher = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+    participants =models.ManyToManyField(
+        Person, blank=True)
+    subjects = models.ManyToManyField('Subject')
     description = models.TextField(max_length=500, null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
-        ordering  = ['-created_at', '-created_at']
+        ordering  = ['-updated_at', '-created_at']
 
     def __str__(self):
         return str(self.name)
     
 class Message(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    class_room = models.ForeignKey(Classroom, on_delete=models.CASCADE)
+    subject = models.ForeignKey(
+        'Subject', null=True, blank=True, on_delete=models.CASCADE)
+    class_room = models.ForeignKey(
+        Classroom, null=True, blank=True, on_delete=models.CASCADE)
+    subjects = models.ManyToManyField('Subject', related_name='subjects')
     content = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
-        ordering = ['-created_at', '-created_at']
+        ordering = ['-updated_at', '-created_at']
 
     def __str__(self):
         return str(self.content[0:50])
@@ -161,11 +193,13 @@ class Notification(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     title = models.CharField(max_length=255)
     content = models.TextField()
+    notification_group = models.CharField(
+        max_length=25, choices=Notification_Groups, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
-        ordering = ['-created_at', '-created_at']
+        ordering = ['-updated_at', '-created_at']
 
     def __str__(self):
         return str(self.title)
@@ -179,7 +213,25 @@ class TODO(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     
     class Meta:
-        ordering = ['-created_at', '-created_at']
+        ordering = ['-updated_at', '-created_at']
 
     def __str__(self):
         return str(self.title)
+    
+
+class Subject(models.Model):
+    room = models.ForeignKey(Classroom, on_delete=models.CASCADE)
+    title = models.CharField(max_length=255)
+    description = models.TextField()
+    participants = models.ManyToManyField(
+        Person, related_name='participants', blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    
+    class Meta:
+        ordering = ['-updated_at', '-created_at']
+
+    def __str__(self):
+        return str(self.title)
+    
+    

@@ -1,9 +1,11 @@
 from django.shortcuts import render, redirect
-from django.http import HttpResponseRedirect, HttpResponse
+from django.http import HttpResponseRedirect, HttpResponse, HttpResponseForbidden
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
+from django.contrib.auth.forms import UserCreationForm
 from .forms import ClassRoomForm, MessageForm, NotificationForm, TodoForm
-from .models import Classroom, Notification, TODO, Message
+from .models import Classroom, Notification, TODO, Message, Person, Subject
 from django.contrib.auth.models import User
 
 
@@ -19,10 +21,15 @@ def Home(request):
 
 # the view for the login page
 def Login(request):
+    
+    # if teh user is already logged in they can login again
+    if request.user.is_authenticated:
+        return redirect('home')
+    
     # chat that teh request method is post providing some data
     if request.method == 'POST':
         # collect the specific field dates from the  form
-        username =  request.POST['username']
+        username =  request.POST['username'].lower()
         password =  request.POST['password']
         
         try:
@@ -40,7 +47,7 @@ def Login(request):
         else:
             messages.error(request, "Username or password incorrect")
     context = {}
-    return render(request, "login_register.html", context)
+    return render(request, "login.html", context)
 
 # logs you out of the session, this will be on teh nav bar
 def Logout(request):
@@ -48,16 +55,50 @@ def Logout(request):
     return redirect('home')
 
 
-def Register(request):
-    return HttpResponse("Register Page")
+def Register(request): 
+    form = UserCreationForm()
+    if request.method == 'POST':
+        form = UserCreationForm(request.POST)
+        if form.is_valid():
+            # storing the data before we actually  save it to the database
+            # making it lowercase just in case the user passed uppercase elements
+           new_user = form.save(commit=False)
+           new_user.username = new_user.username.lower()
+           new_user.save()
+           login(request,new_user)
+           return redirect('home')
+        else:
+            messages.error(request,"Unsuccessful registration. Invalid information.")
+    context = {'form': form}
+    return render(request, "register.html", context)
 
 
 def MyClass(request, pk):
     # create an instance of the of the specific classroom ou want to show using the pk
     classrooms = Classroom.objects.get(id=pk)
     # pass the context to be rendered on the page
-    context = {"classrooms": classrooms}
+    subjects = classrooms.subject_set.all()
+    context = {"classrooms": classrooms, 'subjects': subjects}
     return render(request, 'class.html', context)
+
+
+def MySubject(request, pk):
+    # create an instance of the of the specific classroom ou want to show using the pk
+    subj = Subject.objects.get(id=pk)
+    messages = Message.objects.all()
+    participants = subj.participants.all()
+    
+    if request.method == 'POST':
+        new_messages = Message.objects.create(
+            user = request.user,
+            content = request.POST.get('body'),
+            subject = subj
+            
+        )
+        return redirect('subject', pk=subj.id)
+    
+    context = {"subj": subj, 'messages':messages, 'participants': participants}
+    return render(request, 'subject.html', context)
 
 
 def ToDo(request):
@@ -83,10 +124,13 @@ def About(request):
 def Contact(request):
     return HttpResponse("Contact Us Page")
 
+
+@login_required(login_url='login')
 def CreateClassroom(request):
     # create an instance of the of the specific classroom
     form = ClassRoomForm
     # check if the method being returned by the url and the form on teh HTML is post
+    
     if request.method == "POST":
         # if it's  a POST request we populate the instance with data from the form request
         form = ClassRoomForm(request.POST)
@@ -99,11 +143,18 @@ def CreateClassroom(request):
     context = {'form': form}
     return render(request, 'classroom_form.html', context)
 
+
+@login_required
 def UpdateClassroom(request, pk):
     # create an instance of the of the specific classroom ou want to update using the pk
-    form = Classroom.objects.get(id=pk)
+    room = Classroom.objects.get(id=pk)
     # use the existing instance to get the existing information you want to update
-    form = ClassRoomForm(instance=form)
+    form = ClassRoomForm(instance=room)
+    
+    # check if the user tying to update is the one authorized
+    if request.user !=  room.class_teacher:
+        return  HttpResponseForbidden("You are not authorized to edit this Classroom.")
+    
     if request.method == "POST":
         form = ClassRoomForm(request.POST)
         if form.is_valid():
@@ -115,16 +166,22 @@ def UpdateClassroom(request, pk):
     return render(request, 'classroom_form.html', context)
 
 
+@login_required
 def DeleteClassroom(request, pk):
     # create an instance of the of the specific classroom ou want to delete using the pk
     room = Classroom.objects.get(id=pk)
+    
+    if request.user != room.class_teacher:
+        return HttpResponseForbidden("You are not authorized to delete this Classroom.")
+    
     if request.method == "POST":
         room.delete()
         return redirect('home')
 
     return render(request, 'delete_classroom.html', {'obj': room})
  
- 
+
+@login_required
 def SendMessage(request):
     form = MessageForm
     if request.method == "POST":
@@ -136,6 +193,8 @@ def SendMessage(request):
     context = {'form': form}
     return render(request, 'message_form.html', context)
 
+
+@login_required
 def EditMessage(request, pk):
     form = Message.objects.get(id=pk)
     form = MessageForm(instance=form)
@@ -149,6 +208,7 @@ def EditMessage(request, pk):
     return render(request, 'message_form.html', context)
 
 
+@login_required
 def DeleteMessage(request, pk):
     message = Message.objects.get(id=pk)
     if request.method == "POST":
@@ -158,6 +218,7 @@ def DeleteMessage(request, pk):
     return render(request, 'delete_message.html', {'obj': message})
 
 
+@login_required
 def SendNotification(request):
     form = NotificationForm
     if request.method == "POST":
@@ -170,6 +231,7 @@ def SendNotification(request):
     return render(request, 'notification_form.html', context)
 
 
+@login_required
 def EditNotification(request, pk):
     form = Notification.objects.get(id=pk)
     form = NotificationForm(instance=form)
@@ -183,6 +245,7 @@ def EditNotification(request, pk):
     return render(request, 'notification_form.html', context)
 
 
+@login_required
 def DeleteNotification(request, pk):
     notification = Notification.objects.get(id=pk)
     if request.method == "POST":
@@ -192,6 +255,7 @@ def DeleteNotification(request, pk):
     return render(request, 'delete_notification.html', {'obj': notification})
 
 
+@login_required
 def MyNotice(request, pk):
     # create an instance of the of the specific notification ou want to show using the pk
     notification = Notification.objects.get(id=pk)
@@ -200,8 +264,8 @@ def MyNotice(request, pk):
     return render(request, 'notice.html', context)
 
 
-# ------------------------------------>
-
+# this decorator means this function only works if the user is logged
+@login_required
 def CreateTask(request):
     form = TodoForm
     if request.method == "POST":
@@ -214,6 +278,7 @@ def CreateTask(request):
     return render(request, 'todo_form.html', context)
 
 
+@login_required
 def EditTask(request, pk):
     form = TODO.objects.get(id=pk)
     form = TodoForm(instance=form)
@@ -227,6 +292,7 @@ def EditTask(request, pk):
     return render(request, 'todo_form.html', context)
 
 
+@login_required
 def DeleteTask(request, pk):
     tasks = TODO.objects.get(id=pk)
     if request.method == "POST":
@@ -236,6 +302,7 @@ def DeleteTask(request, pk):
     return render(request, 'delete_task.html', {'obj': tasks})
 
 
+@login_required
 def MyTask(request, pk):
     # create an instance of the of the specific notification ou want to show using the pk
     tasks = TODO.objects.get(id=pk)

@@ -7,9 +7,12 @@
 <h1>Dashboard Here</h1>
 <h2>
     {% if request.user.is_authenticated %}
+        <h2>
+            Welcome back, {{request.user}}!
+        </h2>
         <a href="{% url 'logout' %}">Logout</a>
     {% else %}
-    <a href="{% url 'login' %}">Login</a>
+        <a href="{% url 'login' %}">Login</a>
     {% endif %}
     
 </h2>
@@ -28,8 +31,10 @@
                 <h2>
                     {{message.content}}
                 </h2>
+                {% if request.user == message.user %}
                 <a href="{% url 'edit_message' message.id %}">Edit</a>
                 <a href="{% url 'delete_message' message.id %}">Delete</a>
+                {% endif %}
                 <span>
                     @{{ message.user}}
                 </span>
@@ -53,8 +58,10 @@
                 <span>
                     @{{ class.class_teacher}}
                 </span>
+                {% if request.user == class.class_teacher %}
                 <a href="{% url 'update_classroom' class.id %}">Edit</a>
                 <a href="{% url 'delete_classroom' class.id %}">Delete</a>
+                {% endif %}
                 <hr>
             </div>
             {% endfor %}
@@ -70,8 +77,10 @@
                 <h2>
                     @{{notice.user}} - <a href="{% url 'notice' notice.id %}"> {{notice.title}}</a>
                 </h2>
+                {% if request.user == notice.user %}
                 <a href="{% url 'edit_notification' notice.id %}">Edit</a>
                 <a href="{% url 'delete_notification' notice.id %}">Delete</a>
+                {% endif %}
                 <hr>
             </div>
             {% endfor %}
@@ -89,8 +98,10 @@
                 <h2>
                     {{task.description}} - <a href="{% url 'task' task.id %}"> {{task.title}} </a>
                 </h2>
+                {% if request.user == task.user %}
                 <a href="{% url 'edit_task' task.id %}">Edit</a>
                 <a href="{% url 'delete_task' task.id %}">Delete</a>
+                {% endif %}
                 <hr>
             </div>
             {% endfor %}

@@ -1,0 +1,35 @@
+{% block content %}
+
+<h1>
+    Login Page
+</h1>
+
+<div>
+    {% if messages %}
+    <ul class="messages">
+        {% for message in messages %}
+        <li>{{ message }}</li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+    
+    <form action="" method="POST">
+        {% csrf_token %}
+        {{form.as_p}}
+    
+        <label for="">Username</label>
+        <input type="text" name="username" placeholder="Enter Username">
+        <label for="">Password </label>
+        <input type="Password" name="password" placeholder="Enter Password">
+        <input type="submit" value="Login">
+    </form>
+
+    <h2>
+        No Account Yet?
+    </h2>
+    <h1>
+        <a href="{% url 'register' %}">Sign Up!</a>
+    </h1>
+</div>
+
+{% endblock content %}
