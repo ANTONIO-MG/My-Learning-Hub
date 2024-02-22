@@ -1,5 +1,5 @@
 from django.forms import  ModelForm
-from .models import Classroom, Message, Notification, TODO
+from .models import Classroom, Message, Notification, TODO, Person
 
 # form to create a classroom
 class  ClassRoomForm(ModelForm):
@@ -12,6 +12,14 @@ class MessageForm(ModelForm):
     class Meta:
         model = Message
         fields = '__all__'
+        
+    # def __init__(self, *args, **kwargs):
+    #     super(MessageForm, self).__init__(*args, **kwargs)
+    #     # Exclude specific fields
+    #     exclude_fields = ['subject', 'subjects', 'user', 'class_room']
+    #     for field_name in exclude_fields:
+    #         if field_name in self.fields:
+    #             del self.fields[field_name]
 
 # form to create a Notification
 class NotificationForm(ModelForm):
@@ -24,3 +32,22 @@ class TodoForm(ModelForm):
     class Meta:
         model = TODO
         fields = '__all__'
+
+
+class EditProfileForm(ModelForm):
+    class Meta:
+        model = Person
+        fields = '__all__'
+        
+
+class PersonForm(ModelForm):
+    class Meta:
+        model = Person
+        fields = '__all__'
+        exclude = ['profile_picture',
+                   'user_category', 'user_name', 'last_name', 'gender',
+                   'race', 'emergency_contact', 'profile_picture',
+                   'is_staff', 'is_active', 'date_of_birth', 'first_name',
+                   'groups', 'superuser', 'last_login', 'subjects',
+                   'user_permissions']
+

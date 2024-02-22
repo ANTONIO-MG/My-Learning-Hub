@@ -26,4 +26,6 @@ urlpatterns = [
     path('delete_task/<str:pk>/', views.DeleteTask, name="delete_task"),
     path('task/<str:pk>', views.MyTask, name="task"),
     path('subject/<str:pk>', views.MySubject, name="subject"),
+    path('profile/<str:pk>', views.Profile, name="profile"),
+    path('edit_profile/<str:pk>', views.EditProfile, name="edit_profile"),
 ] 

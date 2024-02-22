@@ -20,10 +20,16 @@
             <h2>Conversations</h2>
             {% for message in messages %}
             {% if message.subject.title == subj.title %}
-            <h4>{{ message.title }}</h4>
-            <h5>{{ message.content }}</h5>
-            <h6> @{{ message.user }} - {{ message.created_at | timesince }} ago</h6>
-            <hr>
+                <h4>{{ message.title }}</h4>
+                <h5>{{ message.content }}</h5>
+                <h6> @{{ message.user }} - {{ message.created_at | timesince }} ago</h6>
+                {% if request.user == message.user %}
+                    <small>
+                        <a href="{% url 'edit_message'  message.id %}">Edit</a>
+                        <a href="{% url 'delete_message' message.id %}">Delete</a>
+                    </small>
+                {% endif %}
+                <hr>
             {% endif %}
             {% endfor %}
         </div>
@@ -34,14 +40,16 @@
                 <input type="text" name="body" placeholder="Write your message Here"><br>
             </form>
         </div>
+
         {% endif %}
     </div>
     <div>
         <h2>
             Participants
         </h2>
-        {% for participant in Participants %}
-            <small>@{{ participant.first_name }}</small>
+        {% for participant in participants %}
+            <h4>@{{ participant.first_name }} {{ participant.last_name }}</h4>
+            {{ participant.username }}
         {% endfor %}
     </div>
 </div>

@@ -1,16 +1,22 @@
 <style>
     .home-container{
         display: grid;
-        grid-template-columns: 1fr 1fr;
+        grid-template-columns: 1fr 3fr 1fr;
     }
 </style>
-<h1>Dashboard Here</h1>
+<a href="/">
+    <h1>Home Page</h1>
+</a>
+<form action="{% url 'home' %}" method="GET">
+    <input type="text" name="query" placeholder="Search..."/>
+</form>
 <h2>
     {% if request.user.is_authenticated %}
         <h2>
-            Welcome back, {{request.user}}!
+            {{request.user}}'s Home Page.
         </h2>
         <a href="{% url 'logout' %}">Logout</a>
+        <a href="{% url 'profile' user.id %}">My Profile</a>
     {% else %}
         <a href="{% url 'login' %}">Login</a>
     {% endif %}
@@ -105,5 +111,11 @@
                 <hr>
             </div>
             {% endfor %}
+        </div>
+        <div>
+            <h1>
+                Recent Activities
+            </h1>
+
         </div>
 </div>

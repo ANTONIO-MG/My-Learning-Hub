@@ -1,0 +1,61 @@
+<style>
+    .profile-container{
+        display: grid;
+        grid-template-columns: 1fr 3fr 1fr;
+    }
+</style>
+
+{% block content %}
+
+{% if user.is_authenticated %}
+<h1>{{user.username}} Profile Here!</h1>
+{% endif %}
+
+<div  class="profile-container">
+    
+    <div>
+        <h1>
+            My Rooms
+            {% for room in classrooms %}
+                {%  if me in room.participants.all %}
+                    <h3>
+                        
+                        <a href="{% url 'class' room.id %}">{{ room.name }}</a>
+                    </h3>
+                {% endif %}
+            {% endfor %}
+        </h1>
+    </div>
+    <div>
+        <h1>
+            About me
+        </h1>
+        <small>
+            {{me.first_name}}
+            <br>
+            {{me.last_name}}
+            <br>
+            {{me.race}}
+            <br>
+            {{me.email}}
+            <br>
+            {{me.date_of_birth}}
+            <br>
+            <h3>
+                <a href="{{request.META.HTTP_REFERER}}">Back</a>
+            </h3>
+        </small>
+    </div>
+    <div>
+        <h1>
+            My Chats
+        </h1>
+        {% for item in subjects %}
+        <small>
+            <a href="{% url 'subject' item.id %}">{{ item.title }}</a>
+        </small>
+        {% endfor %}
+    </div>
+</div>
+
+{% endblock content %}

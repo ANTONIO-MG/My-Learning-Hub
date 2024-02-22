@@ -104,6 +104,8 @@ message:
 
 from django.db import models
 from django.contrib.auth.models import User
+from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
+from django.contrib.auth.models import BaseUserManager
 
 GENDER_CHOICES = [
         ('Male', 'Male'),
@@ -130,37 +132,60 @@ user_type = [
 ]
 
 
-class Person(models.Model):
-    user = models.OneToOneField(User, primary_key=True, on_delete=models.CASCADE)
+class PersonManager(BaseUserManager):
+    def create_user(self, email, password=None, **extra_fields):
+        if not email:
+            raise ValueError('The Email field must be set')
+        email = self.normalize_email(email)
+        user = self.model(email=email, **extra_fields)
+        user.set_password(password)
+        user.save(using=self._db)
+        return user
+
+    def create_superuser(self, email, password=None, **extra_fields):
+        extra_fields.setdefault('is_staff', True)
+        extra_fields.setdefault('is_superuser', True)
+        extra_fields.setdefault('is_active', True)
+        return self.create_user(email, password, **extra_fields)
+
+
+class Person(AbstractBaseUser, PermissionsMixin):
+    objects = PersonManager()
+    user_name = models.CharField(max_length=30, unique=True)
     first_name = models.CharField(max_length=50, default="first name")
     last_name = models.CharField(max_length=50, default="last name")
-    email = models.EmailField(unique=True, blank=True, null=True)
+    email = models.EmailField(unique=True, blank=True,
+                              null=True)
     gender = models.CharField(max_length=10, choices=GENDER_CHOICES)
     race = models.CharField(
         max_length=50, choices=Race, default='Other')
-    date_of_birth = models.DateField()
+    date_of_birth = models.DateField(null=True, blank=True)
     contact_number = models.CharField(max_length=15)
     emergency_contact = models.CharField(max_length=15)
     subjects = models.ManyToManyField('Subject', blank=True)
     profile_picture = models.ImageField(
         upload_to='profile_pics/', null=True, blank=True)
-    user_category = models.CharField(max_length=10, choices=user_type)
+    is_staff = models.BooleanField(default=False)
+    is_active = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    # makes the email field teh default base field
+    USERNAME_FIELD = 'email'
+    # created the fields tha are required at user creation stage
+    REQUIRED_FIELDS = ['user_name']
     
     class Meta:
         ordering = ['-updated_at', '-created_at']
 
     def __str__(self):
-        return str(self.first_name  + " " + self.last_name)
+        return str(self.user_name)
 
 
 class Classroom(models.Model):
     name = models.CharField(max_length=255)
-    class_teacher = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     participants =models.ManyToManyField(
         Person, blank=True)
-    subjects = models.ManyToManyField('Subject')
+    subjects = models.ManyToManyField('Subject',  blank=True)
     description = models.TextField(max_length=500, null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -172,12 +197,11 @@ class Classroom(models.Model):
         return str(self.name)
     
 class Message(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(Person, on_delete=models.CASCADE)
     subject = models.ForeignKey(
         'Subject', null=True, blank=True, on_delete=models.CASCADE)
     class_room = models.ForeignKey(
         Classroom, null=True, blank=True, on_delete=models.CASCADE)
-    subjects = models.ManyToManyField('Subject', related_name='subjects')
     content = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -190,7 +214,7 @@ class Message(models.Model):
     
     
 class Notification(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(Person, on_delete=models.CASCADE)
     title = models.CharField(max_length=255)
     content = models.TextField()
     notification_group = models.CharField(
@@ -206,7 +230,7 @@ class Notification(models.Model):
     
 
 class TODO(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(Person, on_delete=models.CASCADE)
     title = models.CharField(max_length=255)
     description = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
@@ -235,3 +259,4 @@ class Subject(models.Model):
         return str(self.title)
     
     
+

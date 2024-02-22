@@ -1,12 +1,13 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import get_object_or_404, render, redirect
 from django.http import HttpResponseRedirect, HttpResponse, HttpResponseForbidden
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from django.contrib.auth.forms import UserCreationForm
-from .forms import ClassRoomForm, MessageForm, NotificationForm, TodoForm
+from .forms import ClassRoomForm, MessageForm, NotificationForm, TodoForm, PersonForm
 from .models import Classroom, Notification, TODO, Message, Person, Subject
-from django.contrib.auth.models import User
+from django.contrib.auth.models import AbstractUser
+from django.urls import reverse
 
 
  
@@ -16,8 +17,41 @@ def Home(request):
     messages = Message.objects.all()
     notification = Notification.objects.all()
     tasks = TODO.objects.all()
-    context = {"classrooms": classrooms, "messages" : messages, "notification" : notification, "tasks": tasks}
+    search_room = Subject.objects.all()
+    context = {"classrooms": classrooms, "messages" : messages,
+               "notification" : notification, "tasks": tasks,
+               "search_room": search_room}
     return  render(request, 'home.html', context)
+
+
+def Profile(request, pk):
+    me = Person.objects.get(id=pk)
+    all_users = Person.objects.all()
+    subjects = me.participants.all()
+    classrooms = Classroom.objects.all()
+    messages = Message.objects.all()
+    notification = Notification.objects.all()
+    tasks = TODO.objects.all()
+    search_room = Subject.objects.all()
+    person = Person.objects
+    context = {"classrooms": classrooms, "messages": messages,
+               "notification": notification, "tasks": tasks,
+               "search_room": search_room, 'me':me, 'subjects': subjects,
+               'all_users': all_users}
+    return render(request, 'profile.html', context)
+
+
+def EditProfile(request, pk):
+    form = Person.objects.get(id=pk)
+    form = PersonForm(instance=form)
+    if request.method == "POST":
+        form = PersonForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('home')
+
+    context = {'form': form}
+    return render(request, 'profile_form.html', context)
 
 # the view for the login page
 def Login(request):
@@ -34,7 +68,7 @@ def Login(request):
         
         try:
             # check if the user already exists in your database by the given field
-            user = User.objects.get(username=username)
+            user = AbstractUser.objects.get(username=username)
         except:
             # if the user  does not exist display a message
             messages.error(request, "Username does not exist")
@@ -56,14 +90,14 @@ def Logout(request):
 
 
 def Register(request): 
-    form = UserCreationForm()
+    form = PersonForm()
     if request.method == 'POST':
-        form = UserCreationForm(request.POST)
+        form = PersonForm(request.POST)
         if form.is_valid():
             # storing the data before we actually  save it to the database
             # making it lowercase just in case the user passed uppercase elements
            new_user = form.save(commit=False)
-           new_user.username = new_user.username.lower()
+           new_user.user_name = new_user.user_name.lower()
            new_user.save()
            login(request,new_user)
            return redirect('home')
@@ -196,12 +230,15 @@ def SendMessage(request):
 
 @login_required
 def EditMessage(request, pk):
+    
+    message = get_object_or_404(Message, id=pk)
     form = Message.objects.get(id=pk)
     form = MessageForm(instance=form)
     if request.method == "POST":
         form = MessageForm(request.POST)
         if form.is_valid():
             form.save()
+            message.delete()
             return redirect('home')
     
     context = {'form': form}
@@ -211,6 +248,10 @@ def EditMessage(request, pk):
 @login_required
 def DeleteMessage(request, pk):
     message = Message.objects.get(id=pk)
+    
+    if request.user != message.user:
+        return HttpResponse("Not Allowed to delete")
+    
     if request.method == "POST":
         message.delete()
         return redirect('home')
