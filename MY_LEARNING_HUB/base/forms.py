@@ -1,3 +1,4 @@
+from django import forms
 from django.forms import  ModelForm
 from .models import Classroom, Message, Notification, TODO, Person
 
@@ -38,6 +39,11 @@ class EditProfileForm(ModelForm):
     class Meta:
         model = Person
         fields = '__all__'
+        exclude = ['last_name', 'gender',
+                   'race', 'emergency_contact',
+                   'is_staff', 'is_active',
+                   'groups', 'last_login', 'subjects',
+                   'user_permissions', 'is_superuser']
         
 
 class PersonForm(ModelForm):
@@ -45,9 +51,10 @@ class PersonForm(ModelForm):
         model = Person
         fields = '__all__'
         exclude = ['profile_picture',
-                   'user_category', 'user_name', 'last_name', 'gender',
+                   'user_category', 'last_name', 'gender',
                    'race', 'emergency_contact', 'profile_picture',
                    'is_staff', 'is_active', 'date_of_birth', 'first_name',
                    'groups', 'superuser', 'last_login', 'subjects',
-                   'user_permissions']
-
+                   'user_permissions', 'is_superuser']
+    my_class = forms.ModelChoiceField(
+        queryset=Classroom.objects.all(), required=False)

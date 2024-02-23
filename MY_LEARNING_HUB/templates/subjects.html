@@ -1,0 +1,13 @@
+{% block content %}
+    <div class="comment-wrapper">
+        <h3>Conversations</h3>
+        {% for subject in subjects %}
+        <!-- {% if subject.room == my_class %} -->
+        <a href="{% url 'subject' subject.id %}">
+            <h4>{{subject.title}}</h4>
+        </a>
+        <!-- {% endif %} -->
+        {% endfor %}
+        
+    </div>
+{% endblock content %}

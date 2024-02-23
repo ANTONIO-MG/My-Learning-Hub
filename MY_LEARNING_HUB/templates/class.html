@@ -1,13 +1,25 @@
-<h1>{{classrooms.name}}</h1>
+{% extends 'main.html' %}
+{% block content %}
 <div>
-    <h3>{{ classrooms.description}}</h3>
+    <h1>
+        Classrooms
+    </h1>
+    <hr>
+    <div>
+        {% for subject in subjects %}
+        <h2>
+            <a href="{% url 'subject' subject.id %}"> {{subject.name}} </a>
+        </h2>
+        <h3>{{ subject.description}}</h3>
+        <span>
+            @{{ class.participants}}
+        </span>
+        {% endfor %}
+        {% if request.user == class.class_teacher %}
+        <a href="{% url 'update_classroom' class.id %}">Edit</a>
+        <a href="{% url 'delete_classroom' class.id %}">Delete</a>
+        {% endif %}
+        <hr>
+    </div>
 </div>
-<div class="comment-wrapper">
-    <h3>Conversations</h3>
-    {% for  subject in subjects %}
-    <a href="{% url 'subject' subject.id %}">
-        <h4>{{subject.title}}</h4>
-    </a>
-    {% endfor %}
-</div>
-<a href="{{request.META.HTTP_REFERER}}">close</a>
+{% endblock content %}

@@ -1,3 +1,5 @@
+{% extends 'main.html' %}
+{% block content %}
 <style>
     .room-container{
         display: grid;
@@ -12,7 +14,7 @@
 <div class="room-container">
         <div>
             <h2>
-                Subjects
+                Subject Tasks
             </h2>
         </div>
     <div>
@@ -48,9 +50,10 @@
             Participants
         </h2>
         {% for participant in participants %}
-            <h4>@{{ participant.first_name }} {{ participant.last_name }}</h4>
-            {{ participant.username }}
+            <a href="{% url 'profile' participant.id %}">
+                <h4>@{{ participant.first_name }} {{ participant.last_name }}</h4>
+            </a>
         {% endfor %}
     </div>
 </div>
-<a href="{{ request.META.HTTP_REFERER }}">close</a>
+{% endblock content %}

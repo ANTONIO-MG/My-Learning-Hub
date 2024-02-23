@@ -157,6 +157,9 @@ class Person(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(unique=True, blank=True,
                               null=True)
     gender = models.CharField(max_length=10, choices=GENDER_CHOICES)
+    my_class = models.ForeignKey(
+        'Classroom', on_delete=models.SET_NULL, null=True, blank=True)
+    is_student = models.BooleanField(default=True)
     race = models.CharField(
         max_length=50, choices=Race, default='Other')
     date_of_birth = models.DateField(null=True, blank=True)
@@ -166,7 +169,7 @@ class Person(AbstractBaseUser, PermissionsMixin):
     profile_picture = models.ImageField(
         upload_to='profile_pics/', null=True, blank=True)
     is_staff = models.BooleanField(default=False)
-    is_active = models.BooleanField(default=False)
+    is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     # makes the email field teh default base field
@@ -233,6 +236,7 @@ class TODO(models.Model):
     user = models.ForeignKey(Person, on_delete=models.CASCADE)
     title = models.CharField(max_length=255)
     description = models.TextField()
+    is_done = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     

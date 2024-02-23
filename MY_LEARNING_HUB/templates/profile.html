@@ -1,11 +1,11 @@
+{% extends 'main.html' %}
+{% block content %}
 <style>
-    .profile-container{
+    .profile-container {
         display: grid;
         grid-template-columns: 1fr 3fr 1fr;
     }
 </style>
-
-{% block content %}
 
 {% if user.is_authenticated %}
 <h1>{{user.username}} Profile Here!</h1>
@@ -15,14 +15,19 @@
     
     <div>
         <h1>
-            My Rooms
+            My Classroom
+            {% for user in all_users %}
             {% for room in classrooms %}
                 {%  if me in room.participants.all %}
                     <h3>
-                        
-                        <a href="{% url 'class' room.id %}">{{ room.name }}</a>
+                        <h3>
+                            {% if user in room.participants.all %}
+                                {{ user.user_name }}
+                            {% endif %}
+                        </h3>
                     </h3>
                 {% endif %}
+            {% endfor %}
             {% endfor %}
         </h1>
     </div>
@@ -48,14 +53,14 @@
     </div>
     <div>
         <h1>
-            My Chats
+            My Subjects
         </h1>
         {% for item in subjects %}
-        <small>
+        <h3>
             <a href="{% url 'subject' item.id %}">{{ item.title }}</a>
-        </small>
+        </h3>
         {% endfor %}
     </div>
 </div>
 
-{% endblock content %}
+{% endblock content %}  

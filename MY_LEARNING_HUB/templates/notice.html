@@ -1,6 +1,31 @@
-<h1>Notice</h1>
+{% block content %}
 <div>
-    <h2>{{ notification.title}}</h2>
-    <h3>{{ notification.content}}</h3>
-    <a href="{{request.META.HTTP_REFERER}}">close</a>
+    <h1>Notifications</h1>
+    {% if request.user.is_student != True %}
+    <h2>
+        <a href="{% url 'send_notification' %}">Create Notification</a>
+    </h2>
+    <hr>
+    {% endif %}
+    {% for notice in notification %}
+    <div>
+        <h3>
+            {{notice.title}}
+        </h3>
+        <h4>
+            {{notice.content}}
+        </h4>
+        <small>
+            {{notice.updated_at}}
+        </small>
+        {% if request.user == notice.user %}
+        {% if request.user.is_student != True %}
+        <a href="{% url 'edit_notification' notice.id %}">Edit</a>
+        <a href="{% url 'delete_notification' notice.id %}">Delete</a>
+        {% endif %}
+        {% endif %}
+        <hr>
+    </div>
+    {% endfor %}
 </div>
+{% endblock content %}

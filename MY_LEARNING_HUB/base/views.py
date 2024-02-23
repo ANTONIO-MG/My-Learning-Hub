@@ -4,7 +4,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from django.contrib.auth.forms import UserCreationForm
-from .forms import ClassRoomForm, MessageForm, NotificationForm, TodoForm, PersonForm
+from .forms import ClassRoomForm, MessageForm, NotificationForm, TodoForm, PersonForm, EditProfileForm
 from .models import Classroom, Notification, TODO, Message, Person, Subject
 from django.contrib.auth.models import AbstractUser
 from django.urls import reverse
@@ -17,10 +17,10 @@ def Home(request):
     messages = Message.objects.all()
     notification = Notification.objects.all()
     tasks = TODO.objects.all()
-    search_room = Subject.objects.all()
+    subjects = Subject.objects.all()
     context = {"classrooms": classrooms, "messages" : messages,
                "notification" : notification, "tasks": tasks,
-               "search_room": search_room}
+               "subjects": subjects}
     return  render(request, 'home.html', context)
 
 
@@ -32,18 +32,16 @@ def Profile(request, pk):
     messages = Message.objects.all()
     notification = Notification.objects.all()
     tasks = TODO.objects.all()
-    search_room = Subject.objects.all()
-    person = Person.objects
     context = {"classrooms": classrooms, "messages": messages,
                "notification": notification, "tasks": tasks,
-               "search_room": search_room, 'me':me, 'subjects': subjects,
+               'me':me, 'subjects': subjects,
                'all_users': all_users}
     return render(request, 'profile.html', context)
 
 
 def EditProfile(request, pk):
     form = Person.objects.get(id=pk)
-    form = PersonForm(instance=form)
+    form = EditProfileForm(instance=form)
     if request.method == "POST":
         form = PersonForm(request.POST)
         if form.is_valid():
@@ -109,10 +107,10 @@ def Register(request):
 
 def MyClass(request, pk):
     # create an instance of the of the specific classroom ou want to show using the pk
-    classrooms = Classroom.objects.get(id=pk)
+    classroom = Classroom.objects.get(id=pk)
     # pass the context to be rendered on the page
-    subjects = classrooms.subject_set.all()
-    context = {"classrooms": classrooms, 'subjects': subjects}
+    subjects = classroom.subject_set.all()
+    context = {"classrooms": classroom, 'subjects': subjects}
     return render(request, 'class.html', context)
 
 
@@ -120,6 +118,8 @@ def MySubject(request, pk):
     # create an instance of the of the specific classroom ou want to show using the pk
     subj = Subject.objects.get(id=pk)
     messages = Message.objects.all()
+    # person = Person.objects.get(id=pk)
+    # my_class = person.my_class
     participants = subj.participants.all()
     
     if request.method == 'POST':
@@ -131,7 +131,8 @@ def MySubject(request, pk):
         )
         return redirect('subject', pk=subj.id)
     
-    context = {"subj": subj, 'messages':messages, 'participants': participants}
+    context = {"subj": subj, 'messages': messages,
+               'participants': participants}
     return render(request, 'subject.html', context)
 
 
@@ -221,7 +222,8 @@ def SendMessage(request):
     if request.method == "POST":
         form = MessageForm(request.POST)
         if  form.is_valid():
-            form.save()
+            new = form.save(commit=False)
+            new.user = request.user
             return redirect('home')
     
     context = {'form': form}
