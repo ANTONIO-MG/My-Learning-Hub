@@ -1,13 +1,26 @@
 {% block content %}
-    <div class="comment-wrapper">
-        <h3>Conversations</h3>
-        {% for subject in subjects %}
-        <!-- {% if subject.room == my_class %} -->
-        <a href="{% url 'subject' subject.id %}">
-            <h4>{{subject.title}}</h4>
-        </a>
-        <!-- {% endif %} -->
-        {% endfor %}
-        
+<div class="topics">
+    <div class="topics__header">
+        <h2>Browse Subjects</h2>
     </div>
+    <ul class="topics__list">
+        <li>
+            <a href="{% url 'home' %}" class="active">{{ my_class }}</a>
+        </li>
+        {% for subject in subjects %}
+        {% if subject.room == my_class %}
+        <li>
+            <a href="{% url 'subject' subject.id %}">{{subject.title}} <span>{{subject.participants.count}} Stud</span></a>
+        </li>
+        {% endif %}
+        {% endfor %}
+    </ul>
+    <a class="btn btn--link" href="topics.html">
+        More
+        <svg version="1.1" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32">
+            <title>chevron-down</title>
+            <path d="M16 21l-13-13h-3l16 16 16-16h-3l-13 13z"></path>
+        </svg>
+    </a>
+</div>
 {% endblock content %}

@@ -102,6 +102,8 @@ message:
 
 # bellow are the list of classes that map data to teh database
 
+from django.utils import timezone
+from datetime import timedelta
 from django.db import models
 from django.contrib.auth.models import User
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
@@ -157,6 +159,7 @@ class Person(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(unique=True, blank=True,
                               null=True)
     gender = models.CharField(max_length=10, choices=GENDER_CHOICES)
+    bio = models.TextField(max_length=500, blank=True) 
     my_class = models.ForeignKey(
         'Classroom', on_delete=models.SET_NULL, null=True, blank=True)
     is_student = models.BooleanField(default=True)
@@ -237,6 +240,8 @@ class TODO(models.Model):
     title = models.CharField(max_length=255)
     description = models.TextField()
     is_done = models.BooleanField(default=False)
+    task_date = models.DateTimeField(
+        default=timezone.now())
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     

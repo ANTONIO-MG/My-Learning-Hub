@@ -15,12 +15,14 @@ from django.urls import reverse
 def Home(request):
     classrooms = Classroom.objects.all()
     messages = Message.objects.all()
-    notification = Notification.objects.all()
+    notifications = Notification.objects.all()
     tasks = TODO.objects.all()
+    all_users = Person.objects.all()
     subjects = Subject.objects.all()
+    my_class = request.user.my_class
     context = {"classrooms": classrooms, "messages" : messages,
-               "notification" : notification, "tasks": tasks,
-               "subjects": subjects}
+               "notifications" : notifications, "tasks": tasks,
+               "subjects": subjects, 'my_class': my_class, 'all_users': all_users}
     return  render(request, 'home.html', context)
 
 
@@ -84,7 +86,7 @@ def Login(request):
 # logs you out of the session, this will be on teh nav bar
 def Logout(request):
     logout(request)
-    return redirect('home')
+    return redirect('login')
 
 
 def Register(request): 
