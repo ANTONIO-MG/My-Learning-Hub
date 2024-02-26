@@ -243,6 +243,7 @@ class Subject(models.Model):
     description = models.TextField()
     participants = models.ManyToManyField(
         Person, related_name='participants', blank=True)
+    teacher = models.ForeignKey(Person, null=True, blank=True, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     
@@ -283,3 +284,19 @@ class TaskCompletion(models.Model):
 
     def __str__(self):
         return f'{self.user} - {self.task}'
+    
+class Post(models.Model):
+    user = models.ForeignKey('Person', on_delete=models.CASCADE)
+    title = models.CharField(max_length=100, blank=True, null=True)
+    post_body = models.TextField(blank=True, null=True)
+    picture = models.ImageField(
+        upload_to='profile_pics/', null=True, blank=True)
+    media = models.FileField(upload_to='audio_files/', blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    
+    class Meta:
+        ordering = ['-updated_at', '-created_at']
+
+    def __str__(self):
+        return f'{self.title} - {self.user  }'

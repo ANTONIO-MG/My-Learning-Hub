@@ -1,9 +1,15 @@
 from django import forms
 from django.forms import  ModelForm
-from .models import Classroom, Message, Notification, TODO, Person
+from .models import Classroom, Message, Notification, TODO, Person, Post
 
 # form to create a classroom
 class  ClassRoomForm(ModelForm):
+    class Meta:
+        model = Post
+        fields = '__all__'
+        
+        
+class PostForm(ModelForm):
     class Meta:
         model = Classroom
         fields = '__all__'
@@ -47,6 +53,7 @@ class EditProfileForm(ModelForm):
         
 
 class PersonForm(ModelForm):
+    """ this one is used for user registration"""
     class Meta:
         model = Person
         fields = '__all__'
@@ -56,5 +63,16 @@ class PersonForm(ModelForm):
                    'is_staff', 'is_active', 'date_of_birth', 'first_name',
                    'groups', 'superuser', 'last_login', 'subjects',
                    'user_permissions', 'is_superuser']
+    my_class = forms.ModelChoiceField(
+        queryset=Classroom.objects.all(), required=False)
+    
+
+class PersonEditForm(ModelForm):
+    """ this one is used for user profile editor"""
+    class Meta:
+        model = Person
+        fields = '__all__'
+        exclude = ['is_staff', 'is_active', 'groups', 'last_login',
+                   'user_permissions', 'is_superuser', 'email']
     my_class = forms.ModelChoiceField(
         queryset=Classroom.objects.all(), required=False)

@@ -1,12 +1,12 @@
-from datetime import timezone
+from django.utils import timezone
 from django.shortcuts import get_object_or_404, render, redirect
 from django.http import HttpResponseRedirect, HttpResponse, HttpResponseForbidden
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from django.contrib.auth.forms import UserCreationForm
-from .forms import ClassRoomForm, MessageForm, NotificationForm, TodoForm, PersonForm, EditProfileForm
-from .models import Classroom, Notification, TODO, Message, Person, Subject, TaskCompletion
+from .forms import ClassRoomForm, MessageForm, NotificationForm, TodoForm, PersonForm, EditProfileForm, PostForm, PersonEditForm
+from .models import Classroom, Notification, TODO, Message, Person, Subject, TaskCompletion, Post
 from django.contrib.auth.models import AbstractUser
 from django.urls import reverse
 
@@ -21,7 +21,9 @@ def Home(request):
     all_users = Person.objects.all()
     assigned_task = TaskCompletion.objects.filter(user=request.user)
     subjects = Subject.objects.all()
+    me = Person.objects.get(id=request.user.pk)
     my_class = request.user.my_class
+    print(request.user.id)
     context = {"classrooms": classrooms, "messages" : messages,
                "notifications" : notifications, "tasks": tasks,
                "subjects": subjects, 'my_class': my_class,
@@ -31,16 +33,18 @@ def Home(request):
 
 def Profile(request, pk):
     me = Person.objects.get(id=pk)
+    posts = Post.objects.all()
     all_users = Person.objects.all()
     subjects = me.participants.all()
     classrooms = Classroom.objects.all()
     messages = Message.objects.all()
     notification = Notification.objects.all()
+    my_class = request.user.my_class
     tasks = TODO.objects.all()
     context = {"classrooms": classrooms, "messages": messages,
                "notification": notification, "tasks": tasks,
                'me':me, 'subjects': subjects,
-               'all_users': all_users}
+               'all_users': all_users, 'posts': posts, 'my_class': my_class, }
     return render(request, 'profile.html', context)
 
 
@@ -382,3 +386,79 @@ def MyTask(request, pk):
     # pass the context to be rendered on the page
     context = {"tasks": tasks}
     return render(request, 'todo.html', context)
+
+
+@login_required
+def CreatePost(request):
+
+    if request.method == "POST":
+        form = TodoForm(request.POST)
+        if form.is_valid():
+            form.save()
+
+            return redirect('home')
+    context = {'form': form}
+
+    return render(request, 'post_form.html', context)
+
+
+
+@login_required
+def EditPost(request, pk):
+    # Get the original task
+    original_post = Post.objects.get(id=pk)
+
+    if request.method == "POST":
+        form = TodoForm(request.POST, instance=original_post)
+        if form.is_valid():
+            # Delete the original post
+            original_post.delete()
+
+            # Create a new task with updated information
+            new_post = form.save(commit=False)
+            new_post.created_at = original_post.created_at  # Keep the original creation date
+            new_post.updated_at = timezone.now()  # Update the updated date to now
+            new_post.save()
+
+            return redirect('home')
+    else:
+        form = PostForm(instance=original_post)
+
+    context = {'form': form}
+    return render(request, 'post_form.html', context)
+
+
+@login_required
+def DeletePost(request, pk):
+    post = Post.objects.get(id=pk)
+    if request.method == "POST":
+        post.delete()
+        return redirect('home')
+
+    return render(request, 'delete_post.html', {'obj': post})
+
+
+@login_required
+def MyPost(request, pk):
+    post = Post.objects.get(id=pk)
+
+    return render(request, 'delete_task.html', {'obj': post})
+
+
+@login_required
+def EditProfile(request, pk):
+    # Get the original task
+    profile = Person.objects.get(id=pk)
+
+    if request.method == "POST":
+        form = PersonEditForm(request.POST, instance=profile)
+        if form.is_valid():
+            profile.updated_at = timezone.now()  # Update the updated date to now
+            profile.save()
+
+            return redirect('home')
+    else:
+        form = PersonEditForm(instance=profile)
+
+    context = {'form': form}
+    return render(request, 'edit_profile.html', context)

@@ -23,7 +23,7 @@
 
             {% if request.user.is_authenticated %}
             <div class="header__user">
-                <a href="profile.html">
+                <a href="{% url 'profile' request.user.id %}">
                     <div class="avatar avatar--medium active">
                         <img src="{% static 'images/avatar.svg' %}" />
                     </div>

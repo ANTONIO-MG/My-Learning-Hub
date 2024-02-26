@@ -3,15 +3,15 @@
 {% block content %}
 
 <h1>
-    Delete Notification
+    Delete Post
 </h1>
 <form action="" method="POST">
     {% csrf_token %}
     <p>
-        Delete "{{obj}}" ? 
+        Delete "{{obj}}" ?
     </p>
     <a href="{{request.META.HTTP_REFERER}}">Go Back</a>
-    <input type="submit" value="Submit"/>
+    <input type="submit" value="Submit" />
 </form>
 
 

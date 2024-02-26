@@ -28,4 +28,8 @@ urlpatterns = [
     path('subject/<str:pk>', views.MySubject, name="subject"),
     path('profile/<str:pk>', views.Profile, name="profile"),
     path('edit_profile/<str:pk>', views.EditProfile, name="edit_profile"),
+    path('post/<str:pk>', views.MyPost, name="post"),
+    path('create_post', views.CreatePost, name="create_post"),
+    path('edit_post/<str:pk>', views.EditPost, name="edit_post"),
+    path('delete_post/<str:pk>', views.EditProfile, name="delete_post"),
 ] 
