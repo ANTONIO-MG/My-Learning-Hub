@@ -2,6 +2,21 @@
 
 {% for notification in notifications %}
 <div class="activities__box">
+    
+    <div class="activities__boxContent">
+        <h3><a href="room.html">{{ notification.title }}</a></h3>
+        <div class="activities__boxRoomContent">
+            {{ notification.content }}
+        </div>
+        <small>
+            {% if request.user == notification.user %}
+            {% if request.user.is_student != True %}
+            <a href="{% url 'edit_notification' notice.id %}">Edit</a>
+            <a href="{% url 'delete_notification' notice.id %}">Delete</a>
+            {% endif %}
+            {% endif %}
+        </small>
+    </div>
     <div class="activities__boxHeader roomListRoom__header">
         {% if request.user.is_student != True %}
         <h2>
@@ -15,6 +30,7 @@
             <p>
                 @{{ notification.user }}
             </p>
+            <p>{{ notification.updated_at | timesince }}</p>
         </a>
         <div class="roomListRoom__actions">
             <a href="#">
@@ -26,20 +42,6 @@
                 </svg>
             </a>
         </div>
-    </div>
-    <div class="activities__boxContent">
-        <p><small>{{ notification.updated_at | timesince }}</small><a href="room.html">{{ notification.title }}</a></p>
-        <div class="activities__boxRoomContent">
-            {{ notification.content }}
-        </div>
-        <small>
-            {% if request.user == notification.user %}
-            {% if request.user.is_student != True %}
-            <a href="{% url 'edit_notification' notice.id %}">Edit</a>
-            <a href="{% url 'delete_notification' notice.id %}">Delete</a>
-            {% endif %}
-            {% endif %}
-        </small>
     </div>
 </div>
 {% endfor %}

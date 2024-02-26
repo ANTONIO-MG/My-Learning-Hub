@@ -235,22 +235,7 @@ class Notification(models.Model):
         return str(self.title)
     
 
-class TODO(models.Model):
-    user = models.ForeignKey(Person, on_delete=models.CASCADE)
-    title = models.CharField(max_length=255)
-    description = models.TextField()
-    is_done = models.BooleanField(default=False)
-    task_date = models.DateTimeField(
-        default=timezone.now())
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-    
-    class Meta:
-        ordering = ['-updated_at', '-created_at']
 
-    def __str__(self):
-        return str(self.title)
-    
 
 class Subject(models.Model):
     room = models.ForeignKey(Classroom, on_delete=models.CASCADE)
@@ -267,5 +252,34 @@ class Subject(models.Model):
     def __str__(self):
         return str(self.title)
     
-    
+  
+class TODO(models.Model):
+    user = models.ForeignKey(Person, on_delete=models.CASCADE)
+    title = models.CharField(max_length=255)
+    description = models.TextField()
+    subject = models.ForeignKey(Subject, on_delete=models.CASCADE, blank=True, null=True)
+    task_date = models.DateTimeField(blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
+    class Meta:
+        ordering = ['-updated_at', '-created_at']
+
+    def __str__(self):
+        return str(self.title)
+
+  
+class TaskCompletion(models.Model):
+    user = models.ForeignKey('Person', on_delete=models.CASCADE)
+    task = models.ForeignKey(TODO, on_delete=models.CASCADE)
+    is_done = models.BooleanField(default=False)
+    score = models.IntegerField(default=0)
+    completion_date = models.DateTimeField(blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ['-updated_at', '-created_at']
+
+    def __str__(self):
+        return f'{self.user} - {self.task}'

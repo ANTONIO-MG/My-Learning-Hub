@@ -1,3 +1,4 @@
+from datetime import timezone
 from django.shortcuts import get_object_or_404, render, redirect
 from django.http import HttpResponseRedirect, HttpResponse, HttpResponseForbidden
 from django.contrib.auth.decorators import login_required
@@ -5,7 +6,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from django.contrib.auth.forms import UserCreationForm
 from .forms import ClassRoomForm, MessageForm, NotificationForm, TodoForm, PersonForm, EditProfileForm
-from .models import Classroom, Notification, TODO, Message, Person, Subject
+from .models import Classroom, Notification, TODO, Message, Person, Subject, TaskCompletion
 from django.contrib.auth.models import AbstractUser
 from django.urls import reverse
 
@@ -18,11 +19,13 @@ def Home(request):
     notifications = Notification.objects.all()
     tasks = TODO.objects.all()
     all_users = Person.objects.all()
+    assigned_task = TaskCompletion.objects.filter(user=request.user)
     subjects = Subject.objects.all()
     my_class = request.user.my_class
     context = {"classrooms": classrooms, "messages" : messages,
                "notifications" : notifications, "tasks": tasks,
-               "subjects": subjects, 'my_class': my_class, 'all_users': all_users}
+               "subjects": subjects, 'my_class': my_class,
+               'all_users': all_users, 'assigned_task': assigned_task}
     return  render(request, 'home.html', context)
 
 
@@ -312,12 +315,26 @@ def MyNotice(request, pk):
 # this decorator means this function only works if the user is logged
 @login_required
 def CreateTask(request):
-    form = TodoForm
     if request.method == "POST":
         form = TodoForm(request.POST)
         if form.is_valid():
-            form.save()
+            # Save the task
+            task = form.save()
+
+            # Automatically add the task to all participants in the selected subject(s)
+            selected_subject = form.cleaned_data['subject']
+            participants = selected_subject.participants.all()
+
+            
+            for participant in participants:
+                 # Create TaskCompletion for each participant
+                TaskCompletion.objects.create(
+                user=participant,
+                    task=task,
+            )
             return redirect('home')
+    else:
+        form = TodoForm()
 
     context = {'form': form}
     return render(request, 'todo_form.html', context)
@@ -325,13 +342,24 @@ def CreateTask(request):
 
 @login_required
 def EditTask(request, pk):
-    form = TODO.objects.get(id=pk)
-    form = TodoForm(instance=form)
+    # Get the original task
+    original_task = TODO.objects.get(id=pk)
+
     if request.method == "POST":
-        form = TodoForm(request.POST)
+        form = TodoForm(request.POST, instance=original_task)
         if form.is_valid():
-            form.save()
+            # Delete the original task
+            original_task.delete()
+
+            # Create a new task with updated information
+            new_task = form.save(commit=False)
+            new_task.created_at = original_task.created_at  # Keep the original creation date
+            new_task.updated_at = timezone.now()  # Update the updated date to now
+            new_task.save()
+
             return redirect('home')
+    else:
+        form = TodoForm(instance=original_task)
 
     context = {'form': form}
     return render(request, 'todo_form.html', context)
