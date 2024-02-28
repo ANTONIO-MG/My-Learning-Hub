@@ -5,13 +5,13 @@ from .models import Classroom, Message, Notification, TODO, Person, Post
 # form to create a classroom
 class  ClassRoomForm(ModelForm):
     class Meta:
-        model = Post
+        model = Classroom
         fields = '__all__'
         
         
 class PostForm(ModelForm):
     class Meta:
-        model = Classroom
+        model = Post
         fields = '__all__'
         
 # form to create a message
@@ -33,12 +33,14 @@ class NotificationForm(ModelForm):
     class Meta:
         model = Notification
         fields = '__all__'
+        exclude = ['user']
 
 # form to create a task
 class TodoForm(ModelForm):
     class Meta:
         model = TODO
         fields = '__all__'
+        exclude = ['user']
 
 
 class EditProfileForm(ModelForm):
@@ -62,7 +64,7 @@ class PersonForm(ModelForm):
                    'race', 'emergency_contact', 'profile_picture',
                    'is_staff', 'is_active', 'date_of_birth', 'first_name',
                    'groups', 'superuser', 'last_login', 'subjects',
-                   'user_permissions', 'is_superuser']
+                   'user_permissions', 'is_superuser', 'bio']
     my_class = forms.ModelChoiceField(
         queryset=Classroom.objects.all(), required=False)
     

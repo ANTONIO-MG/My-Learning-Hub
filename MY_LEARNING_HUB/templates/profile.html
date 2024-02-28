@@ -20,7 +20,9 @@
                     <div class="profile__info">
                         <h3>{{ me.first_name }} {{ me.last_name }}</h3>
                         <p>@{{ me.user_name }}</p>
+                        {% if me.user_name  == request.user.user_name %}
                         <a href="{% url 'edit_profile' me.id %}" class="btn btn--main btn--pill">Edit Profile</a>
+                        {% endif %}
                     </div>
                     <div class="profile__about">
                         <h3>Bio</h3>
@@ -37,9 +39,11 @@
                     </div>
                 </div>
                 <!-- Posts Appear Here -->
-                {% for post in posts %}
+                {% for post in all_posts %}
                 {% if post.user == request.user %}
                 <div class="roomListRoom">
+                    
+                    
                     <div class="roomListRoom__header">
                         <a href="profile.html" class="roomListRoom__author">
                             <div class="avatar avatar--small active">
@@ -49,7 +53,6 @@
                         </a>
                         <div class="roomListRoom__actions">
                             <span>{{ post.created_at | timesince}}>
-
                         </div>
                     </div>
                     <div class="roomListRoom__content">
@@ -82,13 +85,13 @@
                         <a href="{% url 'edit_post' post.id %}">
                             <p class="roomListRoom__topic">Edit Post</p>
                         </a>
-                        <a href="{% url 'edit_post' post.id %}">
-                            <p class="roomListRoom__topic">Edit Post</p>
+                        <a href="{% url 'delete_post' post.id %}">
+                            <p class="roomListRoom__topic">Delete Post</p>
                         </a>
-                        
-
                         {% endif %}
                     </div>
+                    
+                    
                 </div>
                 {% endif %}
                 {% endfor %}

@@ -121,16 +121,16 @@ Race = [
         ('Other', 'Other'),
     ]
 Notification_Groups = [
-    ('educators', 'educators'),
-    ('students', 'students'),
-    ('classroom', 'classroom'),
-    ('subject', 'subject'),
-    ('all', 'all'),
+    ('educators', 'Educators'),
+    ('students', 'Students'),
+    ('all', 'All'),
 ]
 
-user_type = [
-    ("Student", "Student"),
-    ("Educator", "Educator"),
+USER_TYPE_CHOICES = [
+    ('student', 'Student'),
+    ('educator', 'Educator'),
+    ('parent', 'Parent'),
+    ('staff', 'Staff'),
 ]
 
 
@@ -162,7 +162,8 @@ class Person(AbstractBaseUser, PermissionsMixin):
     bio = models.TextField(max_length=500, blank=True) 
     my_class = models.ForeignKey(
         'Classroom', on_delete=models.SET_NULL, null=True, blank=True)
-    is_student = models.BooleanField(default=True)
+    user_type = models.CharField(max_length=20, choices=USER_TYPE_CHOICES,
+        default='Student')
     race = models.CharField(
         max_length=50, choices=Race, default='Other')
     date_of_birth = models.DateField(null=True, blank=True)
@@ -188,7 +189,7 @@ class Person(AbstractBaseUser, PermissionsMixin):
 
 
 class Classroom(models.Model):
-    name = models.CharField(max_length=255)
+    name = models.CharField(max_length=255, unique=True)
     participants =models.ManyToManyField(
         Person, blank=True)
     subjects = models.ManyToManyField('Subject',  blank=True)
@@ -224,7 +225,7 @@ class Notification(models.Model):
     title = models.CharField(max_length=255)
     content = models.TextField()
     notification_group = models.CharField(
-        max_length=25, choices=Notification_Groups, null=True)
+        max_length=25, choices=Notification_Groups, default='All')
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -243,7 +244,8 @@ class Subject(models.Model):
     description = models.TextField()
     participants = models.ManyToManyField(
         Person, related_name='participants', blank=True)
-    teacher = models.ForeignKey(Person, null=True, blank=True, on_delete=models.CASCADE)
+    teacher = models.ForeignKey(
+        Person, null=True, blank=True, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     

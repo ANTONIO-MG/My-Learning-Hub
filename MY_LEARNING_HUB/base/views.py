@@ -1,3 +1,10 @@
+"""" 
+Function based vies for the base app, the base app is the application running all
+User, Tasks, Notifications, Messages, Classrooms, Subjects CRUD (create, read, update, Delete) functions
+This also manages the database sessions and data management
+"""
+
+# the imports
 from django.utils import timezone
 from django.shortcuts import get_object_or_404, render, redirect
 from django.http import HttpResponseRedirect, HttpResponse, HttpResponseForbidden
@@ -12,8 +19,13 @@ from django.urls import reverse
 
 
  
-# the view that shows the current dashboard
+# The homepage view
 def Home(request):
+    """
+    classroom: stores all the classroom as objects and can be queried
+    messages: stores all the messages on teh database and can be queried
+    """
+    
     classrooms = Classroom.objects.all()
     messages = Message.objects.all()
     notifications = Notification.objects.all()
@@ -23,7 +35,6 @@ def Home(request):
     subjects = Subject.objects.all()
     me = Person.objects.get(id=request.user.pk)
     my_class = request.user.my_class
-    print(request.user.id)
     context = {"classrooms": classrooms, "messages" : messages,
                "notifications" : notifications, "tasks": tasks,
                "subjects": subjects, 'my_class': my_class,
@@ -33,7 +44,7 @@ def Home(request):
 
 def Profile(request, pk):
     me = Person.objects.get(id=pk)
-    posts = Post.objects.all()
+    all_posts = Post.objects.all()
     all_users = Person.objects.all()
     subjects = me.participants.all()
     classrooms = Classroom.objects.all()
@@ -44,7 +55,7 @@ def Profile(request, pk):
     context = {"classrooms": classrooms, "messages": messages,
                "notification": notification, "tasks": tasks,
                'me':me, 'subjects': subjects,
-               'all_users': all_users, 'posts': posts, 'my_class': my_class, }
+               'all_users': all_users, 'all_posts': all_posts, 'my_class': my_class, }
     return render(request, 'profile.html', context)
 
 
@@ -107,7 +118,8 @@ def Register(request):
            new_user.user_name = new_user.user_name.lower()
            new_user.save()
            login(request,new_user)
-           return redirect('home')
+           pk = new_user.id
+           return redirect('edit_profile', pk)
         else:
             messages.error(request,"Unsuccessful registration. Invalid information.")
     context = {'form': form}
@@ -118,8 +130,21 @@ def MyClass(request, pk):
     # create an instance of the of the specific classroom ou want to show using the pk
     classroom = Classroom.objects.get(id=pk)
     # pass the context to be rendered on the page
-    subjects = classroom.subject_set.all()
-    context = {"classrooms": classroom, 'subjects': subjects}
+    subjects = Classroom.objects.all()
+    participants = classroom.participants.all()
+    posts = Post.objects.all()
+    
+    if request.method == 'POST':
+        new_post = Post.objects.create(
+            user=request.user,
+            title=request.POST.get('post_title'),
+            post_body=request.POST.get('content'),
+
+        )
+        return redirect('subject', pk=classroom.id)
+    
+    context = {"classroom": classroom, 'subjects': subjects,
+               'participants': participants, 'posts': posts}
     return render(request, 'class.html', context)
 
 
@@ -127,9 +152,11 @@ def MySubject(request, pk):
     # create an instance of the of the specific classroom ou want to show using the pk
     subj = Subject.objects.get(id=pk)
     messages = Message.objects.all()
-    # person = Person.objects.get(id=pk)
+    people = Person.objects.all()
+    person = Person.objects.get(id=pk)
     # my_class = person.my_class
     participants = subj.participants.all()
+    classroom = Classroom.objects.get(id=pk)
     
     if request.method == 'POST':
         new_messages = Message.objects.create(
@@ -141,7 +168,8 @@ def MySubject(request, pk):
         return redirect('subject', pk=subj.id)
     
     context = {"subj": subj, 'messages': messages,
-               'participants': participants}
+               'participants': participants, 'classroom': classroom,
+               'people': people, 'person': person}
     return render(request, 'subject.html', context)
 
 
@@ -169,34 +197,43 @@ def Contact(request):
     return HttpResponse("Contact Us Page")
 
 
-@login_required(login_url='login')
+@login_required()
 def CreateClassroom(request):
+    
+    create = True
     # create an instance of the of the specific classroom
     form = ClassRoomForm
     # check if the method being returned by the url and the form on teh HTML is post
+    all_subjects = Subject.objects.all()
+    all_students = Person.objects.all()
     
-    if request.method == "POST":
-        # if it's  a POST request we populate the instance with data from the form request
-        form = ClassRoomForm(request.POST)
-        # if form is valid we go ahead and save all the data into the database
-        if  form.is_valid():
-            form.save()
-            # on success we redirect you back to teh Home page
-            return redirect('home')
+    if request.method == 'POST':
+        new_post = Post.objects.create(
+            user=request.user,
+            title=request.POST.get('title'),
+            post_body=request.POST.get('post'),
+            picture=request.POST.get('post_picture'),
+            media=request.POST.get('post_media'),
+
+        )
+        return redirect('home')
     
-    context = {'form': form}
+    context = {'form': form, 'create': create,
+               'all_subjects': all_subjects, 'all_students': all_students}
     return render(request, 'classroom_form.html', context)
 
 
 @login_required
 def UpdateClassroom(request, pk):
+    
+    create = False
     # create an instance of the of the specific classroom ou want to update using the pk
     room = Classroom.objects.get(id=pk)
     # use the existing instance to get the existing information you want to update
     form = ClassRoomForm(instance=room)
     
     # check if the user tying to update is the one authorized
-    if request.user !=  room.class_teacher:
+    if request.user.is_superuser != True :
         return  HttpResponseForbidden("You are not authorized to edit this Classroom.")
     
     if request.method == "POST":
@@ -206,7 +243,7 @@ def UpdateClassroom(request, pk):
             # on success we redirect you back to teh Home page
             return redirect('home')
     
-    context = {'form': form}
+    context = {'form': form, 'create': create}
     return render(request, 'classroom_form.html', context)
 
 
@@ -215,7 +252,7 @@ def DeleteClassroom(request, pk):
     # create an instance of the of the specific classroom ou want to delete using the pk
     room = Classroom.objects.get(id=pk)
     
-    if request.user != room.class_teacher:
+    if request.user.is_superuser != True:
         return HttpResponseForbidden("You are not authorized to delete this Classroom.")
     
     if request.method == "POST":
@@ -228,6 +265,7 @@ def DeleteClassroom(request, pk):
 @login_required
 def SendMessage(request):
     form = MessageForm
+    form.user =  request.user
     if request.method == "POST":
         form = MessageForm(request.POST)
         if  form.is_valid():
@@ -275,7 +313,9 @@ def SendNotification(request):
     form = NotificationForm
     if request.method == "POST":
         form = NotificationForm(request.POST)
+        
         if form.is_valid():
+            form.instance.user = request.user
             form.save()
             return redirect('home')
 
@@ -285,15 +325,24 @@ def SendNotification(request):
 
 @login_required
 def EditNotification(request, pk):
-    form = Notification.objects.get(id=pk)
-    form = NotificationForm(instance=form)
-    if request.method == "POST":
-        form = NotificationForm(request.POST)
-        if form.is_valid():
-            form.save()
-            return redirect('home')
+    create = False
+    note = get_object_or_404(Notification, id=pk)
 
-    context = {'form': form}
+    if request.method == "POST":
+        form = NotificationForm(request.POST, instance=note)
+        if form.is_valid():
+            # Delete the existing post
+            note.delete()
+
+            # Save the updated post
+            form.instance.user = request.user
+            new_instance = form.save()
+
+            return redirect('home')
+    else:
+        form = NotificationForm(instance=note)
+
+    context = {'form': form, 'create': create}
     return render(request, 'notification_form.html', context)
 
 
@@ -319,10 +368,12 @@ def MyNotice(request, pk):
 # this decorator means this function only works if the user is logged
 @login_required
 def CreateTask(request):
+    create = True
     if request.method == "POST":
         form = TodoForm(request.POST)
         if form.is_valid():
             # Save the task
+            form.instance.user = request.user
             task = form.save()
 
             # Automatically add the task to all participants in the selected subject(s)
@@ -340,12 +391,13 @@ def CreateTask(request):
     else:
         form = TodoForm()
 
-    context = {'form': form}
+    context = {'form': form, 'create': create}
     return render(request, 'todo_form.html', context)
 
 
 @login_required
 def EditTask(request, pk):
+    create = False
     # Get the original task
     original_task = TODO.objects.get(id=pk)
 
@@ -365,7 +417,7 @@ def EditTask(request, pk):
     else:
         form = TodoForm(instance=original_task)
 
-    context = {'form': form}
+    context = {'form': form, 'create': create}
     return render(request, 'todo_form.html', context)
 
 
@@ -390,14 +442,20 @@ def MyTask(request, pk):
 
 @login_required
 def CreatePost(request):
+    
+    create = True
 
-    if request.method == "POST":
-        form = TodoForm(request.POST)
-        if form.is_valid():
-            form.save()
-
-            return redirect('home')
-    context = {'form': form}
+    if request.method == 'POST':
+        new_post = Post.objects.create(
+            user = request.user,
+            title = request.POST.get('title'),
+            post_body = request.POST.get('post'),
+            picture = request.POST.get('post_picture'),
+            media = request.POST.get('post_media'),
+            
+        )
+        return redirect('home')
+    context = {'form': form, 'create': create}
 
     return render(request, 'post_form.html', context)
 
@@ -405,6 +463,8 @@ def CreatePost(request):
 
 @login_required
 def EditPost(request, pk):
+    
+    create = False
     # Get the original task
     original_post = Post.objects.get(id=pk)
 
@@ -424,7 +484,7 @@ def EditPost(request, pk):
     else:
         form = PostForm(instance=original_post)
 
-    context = {'form': form}
+    context = {'form': form, 'create': create}
     return render(request, 'post_form.html', context)
 
 

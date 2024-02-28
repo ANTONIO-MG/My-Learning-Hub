@@ -2,27 +2,14 @@
 
 {% for notification in notifications %}
 <div class="activities__box">
-    
+    <h3><a href="room.html">{{ notification.title }}</a></h3>
     <div class="activities__boxContent">
-        <h3><a href="room.html">{{ notification.title }}</a></h3>
+        
         <div class="activities__boxRoomContent">
             {{ notification.content }}
         </div>
-        <small>
-            {% if request.user == notification.user %}
-            {% if request.user.is_student != True %}
-            <a href="{% url 'edit_notification' notice.id %}">Edit</a>
-            <a href="{% url 'delete_notification' notice.id %}">Delete</a>
-            {% endif %}
-            {% endif %}
-        </small>
     </div>
     <div class="activities__boxHeader roomListRoom__header">
-        {% if request.user.is_student != True %}
-        <h2>
-            <a href="{% url 'send_notification' %}">Create Notification</a>
-        </h2>
-        {% endif %}
         <a href="profile.html" class="roomListRoom__author">
             <div class="avatar avatar--small">
                 <img src="https://randomuser.me/api/portraits/women/11.jpg" />
@@ -30,19 +17,17 @@
             <p>
                 @{{ notification.user }}
             </p>
-            <p>{{ notification.updated_at | timesince }}</p>
         </a>
-        <div class="roomListRoom__actions">
-            <a href="#">
-                <svg version="1.1" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32">
-                    <title>remove</title>
-                    <path
-                        d="M27.314 6.019l-1.333-1.333-9.98 9.981-9.981-9.981-1.333 1.333 9.981 9.981-9.981 9.98 1.333 1.333 9.981-9.98 9.98 9.98 1.333-1.333-9.98-9.98 9.98-9.981z">
-                    </path>
-                </svg>
-            </a>
-        </div>
     </div>
+    <p>{{ notification.updated_at | timesince }}</p>
+    <small>
+        {% if request.user == notification.user %}
+        {% if request.user.user_type != 'Educator' or 'Student' %}
+        <a href="{% url 'edit_notification' notification.id %}">Edit</a>
+        <a href="{% url 'delete_notification' notification.id %}">Delete</a>
+        {% endif %}
+        {% endif %}
+    </small>
 </div>
 {% endfor %}
 
