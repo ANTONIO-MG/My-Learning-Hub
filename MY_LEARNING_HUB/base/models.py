@@ -261,7 +261,7 @@ class TODO(models.Model):
     title = models.CharField(max_length=255)
     description = models.TextField()
     subject = models.ForeignKey(Subject, on_delete=models.CASCADE, blank=True, null=True)
-    task_date = models.DateTimeField(blank=True, null=True)
+    task_date = models.DateTimeField()
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -277,7 +277,6 @@ class TaskCompletion(models.Model):
     task = models.ForeignKey(TODO, on_delete=models.CASCADE)
     is_done = models.BooleanField(default=False)
     score = models.IntegerField(default=0)
-    completion_date = models.DateTimeField(blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

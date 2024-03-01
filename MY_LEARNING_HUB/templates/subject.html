@@ -25,7 +25,7 @@
                 <div class="room__header scroll">
                     <div class="room__info">
                         <h3>{{ subj.title }}</h3>
-                        <span>Class Tasks Here</span>
+                        <span>Subject Of: {{subj.room}} Class</span>
                     </div>
                     <div class="room__hosted">
                         <p>Educator</p>
@@ -33,16 +33,13 @@
                             <div class="avatar avatar--small">
                                 <img src="https://randomuser.me/api/portraits/men/37.jpg" />
                             </div>
-                            <span>@{{subj.teacher}}
-                            </span>
-                            <span>({{ subj.teacher.first_name }} {{ subj.teacher.last_name }})
-                            </span>
+                            <span>{{ subj.teacher.first_name }} {{ subj.teacher.last_name }}
                         </a>
                     </div>
                     <div class="room__details">
                         {{ subj.description }}
                     </div>
-                    <span class="room__topics">{{subj.room}}</span>
+                    <span class="room__topics">Total Tasks: {{subj.todo_set.all.count}}</span>
                 </div>
                 <!-- messages Here -->
                 
@@ -60,12 +57,6 @@
                                         <span>@{{ message.user }}</span>
                                     </a>
                                     <span class="thread__date">{{ message.updated_at | timesince }}</span>
-                                    <h4>
-                                        {% if message.user == request.user %}
-                                        <a href="{% url 'edit_message' message.id %}">Edit</a>
-                                        <a href="{% url 'delete_message' message.id %}">Delete</a>
-                                        {% endif %}
-                                    </h4>
                                 </div>
                             </div>
                             <div class="thread__details">
@@ -73,6 +64,13 @@
                                     {{ message.content|linebreaksbr }}
                                 </small>
                             </div>
+                            <br>
+                            <h4>
+                                {% if message.user == request.user %}
+                                <a href="{% url 'edit_message' message.id %}">Edit</a>
+                                <a href="{% url 'delete_message' message.id %}">Delete</a>
+                                {% endif %}
+                            </h4>
                         </div>
                         {% endif %}
                         {% endfor %}
@@ -81,7 +79,11 @@
                 
             </div>
             <div class="room__message">
-                <form action="#"><input name="" placeholder="Write your message here..." /></form>
+                
+                <form action="" method="POST">
+                    {% csrf_token %}
+                    <input name="message" placeholder="Write your message here..." />
+                </form>
             </div>
         </div>
         <!-- Room End -->
@@ -103,60 +105,20 @@
                 </a>
                 {% endfor %}
             </div>
+            <a class="btn btn--link" href="topics.html">
+                More
+                <svg version="1.1" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32">
+                    <title>chevron-down</title>
+                    <path d="M16 21l-13-13h-3l16 16 16-16h-3l-13 13z"></path>
+                </svg>
+            </a>
         </div>
+        
         <!--  End -->
     </div>
 </main>
 
+
+
 {% endblock content %}
 
-<div>
-    <h1>{{ subj.title }}</h1>
-    <h3>{{ subj.description }}</h3>
-</div>
-<br>
-<div class="room-container">
-    <div>
-        <h2>
-            Subject Tasks
-        </h2>
-    </div>
-    <div>
-        <div class="comment-wrapper">
-            <h2>Conversations</h2>
-            {% for message in messages %}
-            {% if message.subject.title == subj.title %}
-            <h4>{{ message.title }}</h4>
-            <h5>{{ message.content }}</h5>
-            <h6> @{{ message.user }} - {{ message.created_at | timesince }} ago</h6>
-            {% if request.user == message.user %}
-            <small>
-                <a href="{% url 'edit_message'  message.id %}">Edit</a>
-                <a href="{% url 'delete_message' message.id %}">Delete</a>
-            </small>
-            {% endif %}
-            <hr>
-            {% endif %}
-            {% endfor %}
-        </div>
-        {% if request.user.is_authenticated %}
-        <div class="comment-form">
-            <form action="" method="POST">
-                {% csrf_token %}
-                <input type="text" name="body" placeholder="Write your message Here"><br>
-            </form>
-        </div>
-
-        {% endif %}
-    </div>
-    <div>
-        <h2>
-            Participants
-        </h2>
-        {% for participant in participants %}
-        <a href="{% url 'profile' participant.id %}">
-            <h4>@{{ participant.first_name }} {{ participant.last_name }}</h4>
-        </a>
-        {% endfor %}
-    </div>
-</div>

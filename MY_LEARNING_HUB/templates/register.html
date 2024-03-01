@@ -26,33 +26,16 @@
                 </div>
             </div>
             <div class="layout__body">
-                <form class="form" action="#" method="POST">
+                <form class="form" action="" method="POST">
                     {% csrf_token %}
-
+                    {% for field in form %}
                     <div class="form__group">
                         <label for="username">
-                            Username
+                            {{field.label}}
                         </label>
-                        {{form.user_name}}
+                        {{field}}
                     </div>
-                    <div class="form__group">
-                        <label for="email">
-                            Email
-                        </label>
-                        {{form.email}}
-                    </div>
-                    <div class="form__group">
-                        <label for="password">
-                            Password
-                        </label>
-                        {{form.password}}
-                    </div>
-                    <div class="form__group">
-                        <label for="student">
-                            Are You A Student?
-                        </label>
-                        {{form.user_type}}
-                    </div>
+                    {% endfor %}
 
                     <div class="form__action">
                         <a class="btn btn--dark" href="{% url 'login' %}">Cancel</a>

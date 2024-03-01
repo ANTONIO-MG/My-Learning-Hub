@@ -1,27 +1,28 @@
 {% block content %}
 
-<h2 >Yesterday <-            Today's           -> Tomorrow</h2>
+<br>
 {% for task in assigned_task %}
+{% if task.is_done == False %}
 <div class="roomListRoom">
     <div class="roomListRoom__header">
         <h1>
-            {{ task.task }}
+            <a href="{% url 'task' task.id %}">{{ task.task }}</a>
         </h1>
+        {% for tsk in tasks %}
+        {% if tsk.id == task.task_id %}
         <div class="roomListRoom__actions">
-            <span>{{ task.completion_date|date:"F j, Y" }}</span>
+            <span>Due {{ tsk.task_date}}</span>
         </div>
+        {% endif %}
+        {% endfor %}
     </div>
     <div class="roomListRoom__content">
-        <p>
-            {{ task.task.description }}
-        </p>
     </div>
     <div class="roomListRoom__meta">
+        {% for tsk in tasks %}
+        {% if task.task.title == tsk.title %}
         <a href="{% url 'profile' user.id %}" class="roomListRoom__author">
-            <div class="avatar avatar--small">
-                <img src="https://randomuser.me/api/portraits/women/11.jpg" />
-            </div>
-            <span>@{{ task.user }}</span>
+            <span>@ {{ tsk.user.first_name }} {{ tsk.user.last_name }}</span>
         </a>
         <a href="room.html" class="roomListRoom__joined">
             <svg version="1.1" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32">
@@ -41,9 +42,19 @@
             </svg>
             {{ task.score }}% (Score)
         </a>
+        {% endif %}
+        {% endfor %}
         
     </div>
 </div>
+{% endif %}
 {% endfor %}
+<a class="btn btn--link" href="{% url 'my_tasks' %}">
+    More
+    <svg version="1.1" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32">
+        <title>chevron-down</title>
+        <path d="M16 21l-13-13h-3l16 16 16-16h-3l-13 13z"></path>
+    </svg>
+</a>
 
 {% endblock content %}

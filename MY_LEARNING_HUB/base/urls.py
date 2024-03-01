@@ -34,6 +34,7 @@ urlpatterns = [
     path('edit_notification/<str:pk>/', views.EditNotification, name="edit_notification"),
     path('delete_notification/<str:pk>/', views.DeleteNotification, name="delete_notification"),
     path('notice/<str:pk>', views.MyNotice, name="notice"),
+    path('notification/<str:pk>', views.MyNotification, name="notification"),
     
     # Here are the tasks URL's
     path('create_task/', views.CreateTask, name="create_task"),
@@ -51,4 +52,14 @@ urlpatterns = [
     path('create_post', views.CreatePost, name="create_post"),
     path('edit_post/<str:pk>', views.EditPost, name="edit_post"),
     path('delete_post/<str:pk>', views.DeletePost, name="delete_post"),
+    
+    # view the list of subjects
+    path('my_subjects', views.MySubjects, name="my_subjects"),
+    
+    # view the list of notifications
+    path('my_notifications', views.MyNotifications, name="my_notifications"),
+    
+    # tasks list
+    path('my_tasks', views.MyTasks, name="my_tasks"),
+    
 ] 

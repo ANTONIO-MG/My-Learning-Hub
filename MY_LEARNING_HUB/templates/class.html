@@ -9,7 +9,7 @@
         <div class="room">
             <div class="room__top">
                 <div class="room__topLeft">
-                    <a href="index.html">
+                    <a href="{{request.META.HTTP_REFERER}}">
                         <svg version="1.1" xmlns="http://www.w3.org/2000/svg" width="32" height="32"
                             viewBox="0 0 32 32">
                             <title>arrow-left</title>
@@ -21,22 +21,6 @@
                     <h3>My Classroom</h3>
                 </div>
 
-
-            <button class="action-button" data-id="120" data-delete-url="https://randomuser.me/api/3324923"
-            data-edit-url="profile.html">
-            <svg version="1.1" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32">
-              <title>ellipsis-horizontal</title>
-              <path
-                d="M16 7.843c-2.156 0-3.908-1.753-3.908-3.908s1.753-3.908 3.908-3.908c2.156 0 3.908 1.753 3.908 3.908s-1.753 3.908-3.908 3.908zM16 1.98c-1.077 0-1.954 0.877-1.954 1.954s0.877 1.954 1.954 1.954c1.077 0 1.954-0.877 1.954-1.954s-0.877-1.954-1.954-1.954z">
-              </path>
-              <path
-                d="M16 19.908c-2.156 0-3.908-1.753-3.908-3.908s1.753-3.908 3.908-3.908c2.156 0 3.908 1.753 3.908 3.908s-1.753 3.908-3.908 3.908zM16 14.046c-1.077 0-1.954 0.877-1.954 1.954s0.877 1.954 1.954 1.954c1.077 0 1.954-0.877 1.954-1.954s-0.877-1.954-1.954-1.954z">
-              </path>
-              <path
-                d="M16 31.974c-2.156 0-3.908-1.753-3.908-3.908s1.753-3.908 3.908-3.908c2.156 0 3.908 1.753 3.908 3.908s-1.753 3.908-3.908 3.908zM16 26.111c-1.077 0-1.954 0.877-1.954 1.954s0.877 1.954 1.954 1.954c1.077 0 1.954-0.877 1.954-1.954s-0.877-1.954-1.954-1.954z">
-              </path>
-            </svg>
-          </button>
             </div>
             <div class="room__box scroll">
                 <div class="room__header scroll">
@@ -71,18 +55,7 @@
                                     </a>
                                     <span class="thread__date">{{ post.updated_at | timesince }}</span>
                                 </div>
-                                <div class="thread__delete">
-                                    {% if request.user == post.user %}
-                                    <a href="{% url 'delete_post' post.id %}">
-                                        <svg version="1.1" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32">
-                                            <title>remove</title>
-                                            <path
-                                                d="M27.314 6.019l-1.333-1.333-9.98 9.981-9.981-9.981-1.333 1.333 9.981 9.981-9.981 9.98 1.333 1.333 9.981-9.98 9.98 9.98 1.333-1.333-9.98-9.98 9.98-9.981z">
-                                            </path>
-                                        </svg>
-                                    </a>
-                                    {% endif %}
-                                </div>
+                                
                             </div>
                             <div class="thread__details">
                                 <h2>
@@ -92,6 +65,12 @@
                                 <small>{{ post.post_body }}</small>
                                 {% if post.media != None %}
                                 <h3>media here</h3>
+                                {% endif %}
+                            </div>
+                            <div class="thread__delete">
+                                {% if message.user == request.user %}
+                                <a href="{% url 'edit_post' post.id %}">Edit</a>
+                                <a href="{% url 'delete_post' post.id %}">Delete</a>
                                 {% endif %}
                             </div>
                             <br>
@@ -134,19 +113,5 @@
         <!--  End -->
     </div>
 </main>
-
-<script>
-    // Get the current date and time
-    var currentDate = new Date();
-
-    // Extract the year, month, day, hour, and minute
-    var year = currentDate.getFullYear();
-
-    // Create a string with the desired format
-    var formattedDate = "Academic Year of " + year;
-
-    // Display the formatted date in the HTML element
-    document.getElementById("currentDateTime").innerText = formattedDate;
-</script>
 
 {% endblock content %}

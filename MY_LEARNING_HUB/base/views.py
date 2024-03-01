@@ -25,10 +25,12 @@ def Home(request):
     classroom: stores all the classroom as objects and can be queried
     messages: stores all the messages on teh database and can be queried
     """
+    date = timezone.now()
+    today = date.strftime('%Y-%m-%d')
     
     classrooms = Classroom.objects.all()
     messages = Message.objects.all()
-    notifications = Notification.objects.all()
+    notifications = Notification.objects.all()[0:3]
     tasks = TODO.objects.all()
     all_users = Person.objects.all()
     assigned_task = TaskCompletion.objects.filter(user=request.user)
@@ -38,7 +40,8 @@ def Home(request):
     context = {"classrooms": classrooms, "messages" : messages,
                "notifications" : notifications, "tasks": tasks,
                "subjects": subjects, 'my_class': my_class,
-               'all_users': all_users, 'assigned_task': assigned_task}
+               'all_users': all_users, 'assigned_task': assigned_task,
+               'today': today}
     return  render(request, 'home.html', context)
 
 
@@ -49,27 +52,27 @@ def Profile(request, pk):
     subjects = me.participants.all()
     classrooms = Classroom.objects.all()
     messages = Message.objects.all()
-    notification = Notification.objects.all()
+    notifications = Notification.objects.all()[0:5]
     my_class = request.user.my_class
     tasks = TODO.objects.all()
     context = {"classrooms": classrooms, "messages": messages,
-               "notification": notification, "tasks": tasks,
+               "notifications": notifications, "tasks": tasks,
                'me':me, 'subjects': subjects,
                'all_users': all_users, 'all_posts': all_posts, 'my_class': my_class, }
     return render(request, 'profile.html', context)
 
 
 def EditProfile(request, pk):
-    form = Person.objects.get(id=pk)
-    form = EditProfileForm(instance=form)
+    person = Person.objects.get(id=pk)
+    form = PersonEditForm(instance=person)
     if request.method == "POST":
-        form = PersonForm(request.POST)
+        form = PersonEditForm(request.POST, instance=person)
         if form.is_valid():
             form.save()
             return redirect('home')
 
     context = {'form': form}
-    return render(request, 'profile_form.html', context)
+    return render(request, 'edit_profile.html', context)
 
 # the view for the login page
 def Login(request):
@@ -112,16 +115,27 @@ def Register(request):
     if request.method == 'POST':
         form = PersonForm(request.POST)
         if form.is_valid():
-            # storing the data before we actually  save it to the database
-            # making it lowercase just in case the user passed uppercase elements
-           new_user = form.save(commit=False)
-           new_user.user_name = new_user.user_name.lower()
-           new_user.save()
-           login(request,new_user)
-           pk = new_user.id
-           return redirect('edit_profile', pk)
+            new_user = form.save(commit=False)
+            new_user.user_name = new_user.user_name.lower()
+            new_user.save()
+            login(request, new_user)
+            pk = new_user.id
+
+            # Assuming you have a field in your Person model to store the selected class
+            selected_class = new_user.my_class
+
+            # Add the new user as a participant to all the subjects of the selected class
+            subjects_for_class = selected_class.subjects.all()
+            for subject in subjects_for_class:
+                subject.participants.add(new_user)
+
+            # Add the new user as a participant to the participants of the selected class
+            selected_class.participants.add(new_user)
+
+            return redirect('edit_profile', pk)
         else:
-            messages.error(request,"Unsuccessful registration. Invalid information.")
+            messages.error(request, "Unsuccessful registration. Invalid information.")
+
     context = {'form': form}
     return render(request, "register.html", context)
 
@@ -153,10 +167,10 @@ def MySubject(request, pk):
     subj = Subject.objects.get(id=pk)
     messages = Message.objects.all()
     people = Person.objects.all()
-    person = Person.objects.get(id=pk)
+    person = Person.objects.get(id=request.user.id)
     # my_class = person.my_class
     participants = subj.participants.all()
-    classroom = Classroom.objects.get(id=pk)
+    classroom = Classroom.objects.get(id=request.user.my_class.id)
     
     if request.method == 'POST':
         new_messages = Message.objects.create(
@@ -171,7 +185,6 @@ def MySubject(request, pk):
                'participants': participants, 'classroom': classroom,
                'people': people, 'person': person}
     return render(request, 'subject.html', context)
-
 
 def ToDo(request):
     todo = TODO.objects.all()
@@ -225,24 +238,29 @@ def CreateClassroom(request):
 
 @login_required
 def UpdateClassroom(request, pk):
-    
     create = False
-    # create an instance of the of the specific classroom ou want to update using the pk
     room = Classroom.objects.get(id=pk)
-    # use the existing instance to get the existing information you want to update
-    form = ClassRoomForm(instance=room)
-    
-    # check if the user tying to update is the one authorized
-    if request.user.is_superuser != True :
-        return  HttpResponseForbidden("You are not authorized to edit this Classroom.")
-    
+
+    # Check if the user trying to update is authorized
+    if not request.user.is_superuser:
+        return HttpResponseForbidden("You are not authorized to edit this Classroom.")
+
     if request.method == "POST":
-        form = ClassRoomForm(request.POST)
+        form = ClassRoomForm(request.POST, instance=room)
         if form.is_valid():
-            form.save()
-            # on success we redirect you back to teh Home page
+            # Delete the existing instance
+            room.delete()
+
+            # Save the updated form as a new instance
+            new_instance = form.save(commit=False)
+            new_instance.id = pk  # Set the id to the original id
+            new_instance.save()
+
+            # Redirect to the Home page on success
             return redirect('home')
-    
+    else:
+        form = ClassRoomForm(instance=room)
+
     context = {'form': form, 'create': create}
     return render(request, 'classroom_form.html', context)
 
@@ -264,6 +282,7 @@ def DeleteClassroom(request, pk):
 
 @login_required
 def SendMessage(request):
+    create = True
     form = MessageForm
     form.user =  request.user
     if request.method == "POST":
@@ -273,13 +292,14 @@ def SendMessage(request):
             new.user = request.user
             return redirect('home')
     
-    context = {'form': form}
+    context = {'form': form, 'create': create}
     return render(request, 'message_form.html', context)
 
 
 @login_required
 def EditMessage(request, pk):
     
+    create = False
     message = get_object_or_404(Message, id=pk)
     form = Message.objects.get(id=pk)
     form = MessageForm(instance=form)
@@ -290,7 +310,7 @@ def EditMessage(request, pk):
             message.delete()
             return redirect('home')
     
-    context = {'form': form}
+    context = {'form': form, 'create': create}
     return render(request, 'message_form.html', context)
 
 
@@ -303,7 +323,7 @@ def DeleteMessage(request, pk):
     
     if request.method == "POST":
         message.delete()
-        return redirect('home')
+        return redirect('subject', pk=message.subject.id)
 
     return render(request, 'delete_message.html', {'obj': message})
 
@@ -354,6 +374,11 @@ def DeleteNotification(request, pk):
         return redirect('home')
 
     return render(request, 'delete_notification.html', {'obj': notification})
+
+def MyNotification(request, pk):
+    notification = Notification.objects.get(id=pk)
+    context = {'notification': notification}
+    return render(request, 'notification.html', context)
 
 
 @login_required
@@ -434,9 +459,10 @@ def DeleteTask(request, pk):
 @login_required
 def MyTask(request, pk):
     # create an instance of the of the specific notification ou want to show using the pk
-    tasks = TODO.objects.get(id=pk)
+    tasks = TaskCompletion.objects.get(id=pk)
+    subject_task = TODO.objects.get(title=tasks.task)
     # pass the context to be rendered on the page
-    context = {"tasks": tasks}
+    context = {"tasks": tasks, 'subject_task': subject_task}
     return render(request, 'todo.html', context)
 
 
@@ -444,6 +470,8 @@ def MyTask(request, pk):
 def CreatePost(request):
     
     create = True
+    
+    form = PostForm(request.POST)
 
     if request.method == 'POST':
         new_post = Post.objects.create(
@@ -505,20 +533,31 @@ def MyPost(request, pk):
     return render(request, 'delete_task.html', {'obj': post})
 
 
-@login_required
-def EditProfile(request, pk):
-    # Get the original task
-    profile = Person.objects.get(id=pk)
+def MySubjects(request):
+    
+    me = Person.objects.get(id=request.user.pk)
+    subjects = Subject.objects.all()
+    my_class = request.user.my_class
+    context = {'subjects': subjects, 'my_class': my_class}
+    return render(request, 'my_subjects.html', context)
 
-    if request.method == "POST":
-        form = PersonEditForm(request.POST, instance=profile)
-        if form.is_valid():
-            profile.updated_at = timezone.now()  # Update the updated date to now
-            profile.save()
 
-            return redirect('home')
-    else:
-        form = PersonEditForm(instance=profile)
+def MyNotifications(request):
 
-    context = {'form': form}
-    return render(request, 'edit_profile.html', context)
+    me = Person.objects.get(id=request.user.pk)
+    notifications = Notification.objects.all()
+    my_class = request.user.my_class
+    context = {'notifications': notifications, 'my_class': my_class}
+    return render(request, 'notifications_tab.html', context)
+
+
+def MyTasks(request):
+
+    me = Person.objects.get(id=request.user.pk)
+    tasks = TODO.objects.all()
+    personal_tasks = TaskCompletion.objects.all()
+    my_class = request.user.my_class
+    assigned_task = TaskCompletion.objects.filter(user=request.user)
+    context = {'tasks': tasks, 'personal_tasks': personal_tasks,
+               'me': me, 'my_class': my_class, 'assigned_task': assigned_task}
+    return render(request, 'tasks_list.html', context)

@@ -1,4 +1,6 @@
 {% extends 'main.html' %}
+{% load static %}
+{{ form.media }}
 
 {% block content %}
 
@@ -8,7 +10,7 @@
         <div class="layout__box">
             <div class="layout__boxHeader">
                 <div class="layout__boxTitle">
-                    <a href="{% url 'edit_profile' request.user.id %}">
+                    <a href="{{request.META.HTTP_REFERER}}">
                         <svg version="1.1" xmlns="http://www.w3.org/2000/svg" width="32" height="32"
                             viewBox="0 0 32 32">
                             <title>arrow-left</title>
@@ -47,10 +49,10 @@
                         {{form.subject}}
                     </div>
                     <div class="form__group">
-                        <label for="date">
+                        <label for="{{ form.task_date.id_for_label }}">
                             Task Date
                         </label>
-                        {{form.task_date}}
+                        {{ form.task_date }}
                     </div>
 
                     <div class="form__action">

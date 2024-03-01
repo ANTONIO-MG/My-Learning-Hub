@@ -9,6 +9,7 @@
         <!-- Topics End -->
 
         <!-- Room List Start -->
+        
         <div class="roomList">
             <div class="mobile-menu">
                 <form class="header__search">
@@ -24,7 +25,7 @@
                     </label>
                 </form>
                 <div class="mobile-menuItems">
-                    <a class="btn btn--main btn--pill" href="#">Browse Topics</a>
+                    <a class="btn btn--main btn--pill" href="{% url 'my_subjects' %}">Browse Subjects</a>
                     <a class="btn btn--main btn--pill" href="#">Recent Activities</a>
                 </div>
             </div>
@@ -32,9 +33,10 @@
             <div class="roomList__header">
                 <div>
                     <h2>Student Tasks</h2>
-                    <p>3 available Today</p>
+
+                    <p>Your Available Tasks</p>
                 </div>
-                {% if request.user.is_superuser == True %}
+                {% if request.user.user_type == 'educator' or request.user.user_type == 'staff' %}
                 <a class="btn btn--main" href="{% url 'create_task' %}">
                     <svg version="1.1" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32">
                         <title>add</title>
@@ -66,6 +68,7 @@
             </div>
             {% include 'notice.html' %}
         </div>
+
         <!-- Activities End -->
     </div>
 </main>
