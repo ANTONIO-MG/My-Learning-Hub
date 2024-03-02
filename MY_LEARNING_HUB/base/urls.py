@@ -15,7 +15,7 @@ urlpatterns = [
     path('logout', views.Logout, name="logout"),
     path('todo', views.ToDo, name="todo"),
     path('about', views.About, name="about"),
-    path('contact', views.Contact, name="contact"),
+    path('contact', views.ContactUs, name="contact"),
     path('report', views.Report, name="report"),
     
     # Here are the classroom URL's
@@ -61,5 +61,6 @@ urlpatterns = [
     
     # tasks list
     path('my_tasks', views.MyTasks, name="my_tasks"),
+    
     
 ] 

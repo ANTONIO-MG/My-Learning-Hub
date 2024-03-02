@@ -26,7 +26,7 @@
                 <div class="room__header scroll">
                     <div class="room__info">
                         <h3>{{ classroom.name }}</h3>
-                        <span>3 days ago</span>
+                        <span>Text Here</span>
                     </div>
                     <div class="room__hosted">
                         <p id="currentDateTime"></p>
@@ -47,7 +47,7 @@
                         <div class="thread">
                             <div class="thread__top">
                                 <div class="thread__author">
-                                    <a href="#" class="thread__authorInfo">
+                                    <a href="{% url 'profile' post.user.id %}" class="thread__authorInfo">
                                         <div class="avatar avatar--small">
                                             <img src="https://randomuser.me/api/portraits/men/37.jpg" />
                                         </div>
@@ -81,8 +81,10 @@
                 </div>
             </div>
             <div class="room__message">
-                <form action="#">
+                <form action="" method="POST">
+                    {% csrf_token %}
                     <input name="post_title" placeholder="Title here..." />
+                    <br>
                     <input name="content" placeholder="Write your message here..." />
                     <input type="submit" value="Submit" />
                 </form>
@@ -103,7 +105,7 @@
                     </div>
                     <p>
                         {{ participant.first_name }} {{ participant.last_name }}
-                        <span>@{{ participant.user_name }}</span>
+                        <span>@{{ participant.username }}</span>
                     </p>
                 </a>
                 {% endfor %}

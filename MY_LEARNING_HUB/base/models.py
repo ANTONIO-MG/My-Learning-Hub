@@ -106,7 +106,7 @@ from django.utils import timezone
 from datetime import timedelta
 from django.db import models
 from django.contrib.auth.models import User
-from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
+from django.contrib.auth.models import AbstractUser, PermissionsMixin
 from django.contrib.auth.models import BaseUserManager
 
 GENDER_CHOICES = [
@@ -151,13 +151,11 @@ class PersonManager(BaseUserManager):
         return self.create_user(email, password, **extra_fields)
 
 
-class Person(AbstractBaseUser, PermissionsMixin):
+class Person(AbstractUser):
     objects = PersonManager()
-    user_name = models.CharField(max_length=30, unique=True)
-    first_name = models.CharField(max_length=50, default="first name")
-    last_name = models.CharField(max_length=50, default="last name")
-    email = models.EmailField(unique=True, blank=True,
-                              null=True)
+    first_name = models.CharField(max_length=50, default="first")
+    last_name = models.CharField(max_length=50, default="last")
+    email = models.EmailField(unique=True)
     gender = models.CharField(max_length=10, choices=GENDER_CHOICES)
     bio = models.TextField(max_length=500, blank=True) 
     my_class = models.ForeignKey(
@@ -179,13 +177,13 @@ class Person(AbstractBaseUser, PermissionsMixin):
     # makes the email field teh default base field
     USERNAME_FIELD = 'email'
     # created the fields tha are required at user creation stage
-    REQUIRED_FIELDS = ['user_name']
+    REQUIRED_FIELDS = []
     
     class Meta:
         ordering = ['-updated_at', '-created_at']
 
     def __str__(self):
-        return str(self.user_name)
+        return str(self.first_name)
 
 
 class Classroom(models.Model):
@@ -206,9 +204,9 @@ class Classroom(models.Model):
 class Message(models.Model):
     user = models.ForeignKey(Person, on_delete=models.CASCADE)
     subject = models.ForeignKey(
-        'Subject', null=True, blank=True, on_delete=models.CASCADE)
+        'Subject', on_delete=models.CASCADE)
     class_room = models.ForeignKey(
-        Classroom, null=True, blank=True, on_delete=models.CASCADE)
+        Classroom, on_delete=models.CASCADE)
     content = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -260,7 +258,7 @@ class TODO(models.Model):
     user = models.ForeignKey(Person, on_delete=models.CASCADE)
     title = models.CharField(max_length=255)
     description = models.TextField()
-    subject = models.ForeignKey(Subject, on_delete=models.CASCADE, blank=True, null=True)
+    subject = models.ForeignKey(Subject, on_delete=models.CASCADE)
     task_date = models.DateTimeField()
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -289,7 +287,7 @@ class TaskCompletion(models.Model):
 class Post(models.Model):
     user = models.ForeignKey('Person', on_delete=models.CASCADE)
     title = models.CharField(max_length=100, blank=True, null=True)
-    post_body = models.TextField(blank=True, null=True)
+    post_body = models.TextField()
     picture = models.ImageField(
         upload_to='profile_pics/', null=True, blank=True)
     media = models.FileField(upload_to='audio_files/', blank=True, null=True)

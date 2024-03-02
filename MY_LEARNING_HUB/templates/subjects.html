@@ -4,9 +4,11 @@
         <h2>Browse Subjects</h2>
     </div>
     <ul class="topics__list">
-        <li>
-            <a href="{% url 'class' my_class.id %}" class="active">{{ my_class }}</a>
-        </li>
+        <ul class="topics__list">
+            <li>
+                <a href="{% url 'class' my_class.id %}" class="active">{{my_class}} <span>{{my_class.subjects.count}} Subj</span></a>
+            </li>
+        </ul>
         {% for subject in subjects %}
         {% if subject.room == my_class %}
         <li>

@@ -72,7 +72,7 @@ class PersonForm(ModelForm):
                    'race', 'emergency_contact', 'profile_picture',
                    'is_staff', 'is_active', 'date_of_birth', 'first_name',
                    'groups', 'superuser', 'last_login', 'subjects',
-                   'user_permissions', 'is_superuser', 'bio']
+                   'user_permissions', 'is_superuser', 'bio', 'date_joined', 'contact_number',]
     my_class = forms.ModelChoiceField(
         queryset=Classroom.objects.all(), required=False)
 

@@ -37,6 +37,7 @@ def Home(request):
     subjects = Subject.objects.all()
     me = Person.objects.get(id=request.user.pk)
     my_class = request.user.my_class
+    print(my_class)
     context = {"classrooms": classrooms, "messages" : messages,
                "notifications" : notifications, "tasks": tasks,
                "subjects": subjects, 'my_class': my_class,
@@ -75,32 +76,30 @@ def EditProfile(request, pk):
     return render(request, 'edit_profile.html', context)
 
 # the view for the login page
+
+
 def Login(request):
-    
-    # if teh user is already logged in they can login again
     if request.user.is_authenticated:
         return redirect('home')
-    
-    # chat that teh request method is post providing some data
+
     if request.method == 'POST':
-        # collect the specific field dates from the  form
-        username =  request.POST['username'].lower()
-        password =  request.POST['password']
-        
-        try:
-            # check if the user already exists in your database by the given field
-            user = AbstractUser.objects.get(username=username)
-        except:
-            # if the user  does not exist display a message
-            messages.error(request, "Username does not exist")
-        # if the user does exist then go ahead and authenticate   
-        user = authenticate(request, username=username, password=password)
-        # finally, login te user and and return the home page
+        # Collect the specific field dates from the form
+        email = request.POST['email'].lower()
+        password = request.POST['password']
+
+        # Authenticate the user
+        user = authenticate(request, email=email, password=password)
+
         if user is not None:
-            login(request, user)
-            return redirect('home')
+            # Check if the user is active
+            if user.is_active:
+                login(request, user)
+                return redirect('home')
+            else:
+                messages.error(request, "Your account is not active.")
         else:
-            messages.error(request, "Username or password incorrect")
+            messages.error(request, "Invalid email or password.")
+
     context = {}
     return render(request, "login.html", context)
 
@@ -116,7 +115,6 @@ def Register(request):
         form = PersonForm(request.POST)
         if form.is_valid():
             new_user = form.save(commit=False)
-            new_user.user_name = new_user.user_name.lower()
             new_user.save()
             login(request, new_user)
             pk = new_user.id
@@ -163,28 +161,27 @@ def MyClass(request, pk):
 
 
 def MySubject(request, pk):
-    # create an instance of the of the specific classroom ou want to show using the pk
     subj = Subject.objects.get(id=pk)
     messages = Message.objects.all()
     people = Person.objects.all()
     person = Person.objects.get(id=request.user.id)
-    # my_class = person.my_class
     participants = subj.participants.all()
-    classroom = Classroom.objects.get(id=request.user.my_class.id)
-    
+    classroom = Classroom.objects.get(id=subj.room.id)  # Corrected line
+
     if request.method == 'POST':
-        new_messages = Message.objects.create(
-            user = request.user,
-            content = request.POST.get('body'),
-            subject = subj
-            
+        new_message = Message.objects.create(
+            user=request.user,
+            content=request.POST.get('message'),  # Corrected line
+            subject=subj,
+            class_room =subj.room
         )
         return redirect('subject', pk=subj.id)
-    
+
     context = {"subj": subj, 'messages': messages,
                'participants': participants, 'classroom': classroom,
                'people': people, 'person': person}
     return render(request, 'subject.html', context)
+
 
 def ToDo(request):
     todo = TODO.objects.all()
@@ -206,8 +203,8 @@ def About(request):
     return HttpResponse("About School Page")
 
 
-def Contact(request):
-    return HttpResponse("Contact Us Page")
+def ContactUs(request):
+    return render (request, "contact.html", {})
 
 
 @login_required()

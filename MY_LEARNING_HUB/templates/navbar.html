@@ -7,25 +7,20 @@
             <img src="{% static 'images/logo_2.png' %}" />
             <h1>My Learning Hub</h1>
         </a>
-        {% else %}
-        <a href="" class="header__logo">
-            <img src="{% static 'images/my_logo.png' %}" />
-            <h1>My Learning Hub</h1>
-        </a>
-        {% endif %}
-
         <h3>
            <a href="{% url 'home' %}">Home</a>
         </h3>
         <h3>
-            <a href="{% url 'my_subjects' %}">Class</a>
+            <a href="{% url 'class' request.user.my_class.id %}">Class</a>
         </h3>
         <h3>
-            <a href="notice.html">Notifications</a>
+            <a href="{% url 'my_notifications' %}">Notifications</a>
         </h3>
         <h3>
-        <a href="">Contact</a>
+        <a href="{% url 'contact' %}">Contact</a>
         </h3>
+        {% else %}
+        {% endif %}
         
         <nav class="header__menu">
 
@@ -37,7 +32,7 @@
                     <div class="avatar avatar--medium active">
                         <img src="{% static 'images/avatar.svg' %}" />
                     </div>
-                    <p>{{ request.user.first_name }} {{ request.user.last_name }} <span>@{{ request.user.user_name }}</span></p>
+                    <p>{{ request.user.first_name }} {{ request.user.last_name }} <span>@{{ request.user.username }}</span></p>
                 </a>
                 <button class="dropdown-button">
                     <svg version="1.1" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32">

@@ -19,8 +19,8 @@
                     </div>
                     <div class="profile__info">
                         <h3>{{ me.first_name }} {{ me.last_name }}</h3>
-                        <p>@{{ me.user_name }}</p>
-                        {% if me.user_name  == request.user.user_name %}
+                        <p>@{{ me.username }}</p>
+                        {% if me.username  == request.user.username %}
                         <a href="{% url 'edit_profile' me.id %}" class="btn btn--main btn--pill">Edit Profile</a>
                         {% endif %}
                     </div>
@@ -79,7 +79,7 @@
                 {% if post.user == me %}
                 <div class="roomListRoom">  
                     <div class="roomListRoom__header">
-                        <a href="profile.html" class="roomListRoom__author">
+                        <a href="" class="roomListRoom__author">
                             <div class="avatar avatar--small active">
                                 <img src="https://randomuser.me/api/portraits/men/11.jpg" />
                             </div>
@@ -90,7 +90,7 @@
                         </div>
                     </div>
                     <div class="roomListRoom__content">
-                        <a href="room.html">{{ post.title }}</a>
+                        <a href="{% url 'post' post.id %}">{{ post.title }}</a>
                         <p>
                             {{ post.post_body }}
                         </p>
@@ -113,7 +113,7 @@
                                     d="M12 16c3.859 0 7-3.141 7-7s-3.141-7-7-7c-3.859 0-7 3.141-7 7s3.141 7 7 7zM12 4c2.757 0 5 2.243 5 5s-2.243 5-5 5-5-2.243-5-5c0-2.757 2.243-5 5-5z">
                                 </path>
                             </svg>
-                            {{my_class.participants_set.all.count}}
+                            {{my_class.participants.all.count}} (Views)
                         </a>
                         {% if request.user == post.user %}
                         <a href="{% url 'edit_post' post.id %}">

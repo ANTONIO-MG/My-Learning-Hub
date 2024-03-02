@@ -26,15 +26,12 @@
             <div class="layout__body">
                 <form class="form" action="" method="POST">
                     {% csrf_token %}
-
                     <div class="form__group">
                         <label for="description">
                             Class Summary
                         </label>
                         {{form.description}}
                     </div>
-                    
-
                     <div class="form__action">
                         {% if create == True %}
                         <a class="btn btn--dark" href="{{request.META.HTTP_REFERER}}">Cancel</a>
