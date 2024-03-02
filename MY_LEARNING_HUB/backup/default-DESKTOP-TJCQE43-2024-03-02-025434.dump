@@ -1,0 +1,666 @@
+-- MySQL dump 10.13  Distrib 8.0.36, for Win64 (x86_64)
+--
+-- Host: 127.0.0.1    Database: base01
+-- ------------------------------------------------------
+-- Server version	8.0.36
+
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!50503 SET NAMES utf8mb4 */;
+/*!40103 SET @OLD_TIME_ZONE=@@TIME_ZONE */;
+/*!40103 SET TIME_ZONE='+00:00' */;
+/*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */;
+/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
+/*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
+/*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
+
+--
+-- Table structure for table `auth_group`
+--
+
+DROP TABLE IF EXISTS `auth_group`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `auth_group` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `name` varchar(150) NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `name` (`name`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `auth_group`
+--
+
+LOCK TABLES `auth_group` WRITE;
+/*!40000 ALTER TABLE `auth_group` DISABLE KEYS */;
+/*!40000 ALTER TABLE `auth_group` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `auth_group_permissions`
+--
+
+DROP TABLE IF EXISTS `auth_group_permissions`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `auth_group_permissions` (
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `group_id` int NOT NULL,
+  `permission_id` int NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `auth_group_permissions_group_id_permission_id_0cd325b0_uniq` (`group_id`,`permission_id`),
+  KEY `auth_group_permissio_permission_id_84c5c92e_fk_auth_perm` (`permission_id`),
+  CONSTRAINT `auth_group_permissio_permission_id_84c5c92e_fk_auth_perm` FOREIGN KEY (`permission_id`) REFERENCES `auth_permission` (`id`),
+  CONSTRAINT `auth_group_permissions_group_id_b120cbf9_fk_auth_group_id` FOREIGN KEY (`group_id`) REFERENCES `auth_group` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `auth_group_permissions`
+--
+
+LOCK TABLES `auth_group_permissions` WRITE;
+/*!40000 ALTER TABLE `auth_group_permissions` DISABLE KEYS */;
+/*!40000 ALTER TABLE `auth_group_permissions` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `auth_permission`
+--
+
+DROP TABLE IF EXISTS `auth_permission`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `auth_permission` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `name` varchar(255) NOT NULL,
+  `content_type_id` int NOT NULL,
+  `codename` varchar(100) NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `auth_permission_content_type_id_codename_01ab375a_uniq` (`content_type_id`,`codename`),
+  CONSTRAINT `auth_permission_content_type_id_2f476e4b_fk_django_co` FOREIGN KEY (`content_type_id`) REFERENCES `django_content_type` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=53 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `auth_permission`
+--
+
+LOCK TABLES `auth_permission` WRITE;
+/*!40000 ALTER TABLE `auth_permission` DISABLE KEYS */;
+INSERT INTO `auth_permission` VALUES (1,'Can add log entry',1,'add_logentry'),(2,'Can change log entry',1,'change_logentry'),(3,'Can delete log entry',1,'delete_logentry'),(4,'Can view log entry',1,'view_logentry'),(5,'Can add permission',2,'add_permission'),(6,'Can change permission',2,'change_permission'),(7,'Can delete permission',2,'delete_permission'),(8,'Can view permission',2,'view_permission'),(9,'Can add group',3,'add_group'),(10,'Can change group',3,'change_group'),(11,'Can delete group',3,'delete_group'),(12,'Can view group',3,'view_group'),(13,'Can add content type',4,'add_contenttype'),(14,'Can change content type',4,'change_contenttype'),(15,'Can delete content type',4,'delete_contenttype'),(16,'Can view content type',4,'view_contenttype'),(17,'Can add session',5,'add_session'),(18,'Can change session',5,'change_session'),(19,'Can delete session',5,'delete_session'),(20,'Can view session',5,'view_session'),(21,'Can add person',6,'add_person'),(22,'Can change person',6,'change_person'),(23,'Can delete person',6,'delete_person'),(24,'Can view person',6,'view_person'),(25,'Can add classroom',7,'add_classroom'),(26,'Can change classroom',7,'change_classroom'),(27,'Can delete classroom',7,'delete_classroom'),(28,'Can view classroom',7,'view_classroom'),(29,'Can add notification',8,'add_notification'),(30,'Can change notification',8,'change_notification'),(31,'Can delete notification',8,'delete_notification'),(32,'Can view notification',8,'view_notification'),(33,'Can add post',9,'add_post'),(34,'Can change post',9,'change_post'),(35,'Can delete post',9,'delete_post'),(36,'Can view post',9,'view_post'),(37,'Can add subject',10,'add_subject'),(38,'Can change subject',10,'change_subject'),(39,'Can delete subject',10,'delete_subject'),(40,'Can view subject',10,'view_subject'),(41,'Can add message',11,'add_message'),(42,'Can change message',11,'change_message'),(43,'Can delete message',11,'delete_message'),(44,'Can view message',11,'view_message'),(45,'Can add todo',12,'add_todo'),(46,'Can change todo',12,'change_todo'),(47,'Can delete todo',12,'delete_todo'),(48,'Can view todo',12,'view_todo'),(49,'Can add task completion',13,'add_taskcompletion'),(50,'Can change task completion',13,'change_taskcompletion'),(51,'Can delete task completion',13,'delete_taskcompletion'),(52,'Can view task completion',13,'view_taskcompletion');
+/*!40000 ALTER TABLE `auth_permission` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `base_classroom`
+--
+
+DROP TABLE IF EXISTS `base_classroom`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `base_classroom` (
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `name` varchar(255) NOT NULL,
+  `description` longtext,
+  `created_at` datetime(6) NOT NULL,
+  `updated_at` datetime(6) NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `name` (`name`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `base_classroom`
+--
+
+LOCK TABLES `base_classroom` WRITE;
+/*!40000 ALTER TABLE `base_classroom` DISABLE KEYS */;
+INSERT INTO `base_classroom` VALUES (1,'Grade 12','this is the grade 12 class of 2024','2024-03-01 02:13:10.190150','2024-03-01 10:36:43.262167');
+/*!40000 ALTER TABLE `base_classroom` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `base_classroom_participants`
+--
+
+DROP TABLE IF EXISTS `base_classroom_participants`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `base_classroom_participants` (
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `classroom_id` bigint NOT NULL,
+  `person_id` bigint NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `base_classroom_participants_classroom_id_person_id_2f59cf5e_uniq` (`classroom_id`,`person_id`),
+  KEY `base_classroom_participants_person_id_a100dfdc_fk_base_person_id` (`person_id`),
+  CONSTRAINT `base_classroom_parti_classroom_id_29ad6966_fk_base_clas` FOREIGN KEY (`classroom_id`) REFERENCES `base_classroom` (`id`),
+  CONSTRAINT `base_classroom_participants_person_id_a100dfdc_fk_base_person_id` FOREIGN KEY (`person_id`) REFERENCES `base_person` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `base_classroom_participants`
+--
+
+LOCK TABLES `base_classroom_participants` WRITE;
+/*!40000 ALTER TABLE `base_classroom_participants` DISABLE KEYS */;
+INSERT INTO `base_classroom_participants` VALUES (1,1,1),(2,1,2),(3,1,3),(4,1,5);
+/*!40000 ALTER TABLE `base_classroom_participants` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `base_classroom_subjects`
+--
+
+DROP TABLE IF EXISTS `base_classroom_subjects`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `base_classroom_subjects` (
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `classroom_id` bigint NOT NULL,
+  `subject_id` bigint NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `base_classroom_subjects_classroom_id_subject_id_5fba91e6_uniq` (`classroom_id`,`subject_id`),
+  KEY `base_classroom_subjects_subject_id_29177de5_fk_base_subject_id` (`subject_id`),
+  CONSTRAINT `base_classroom_subje_classroom_id_26585114_fk_base_clas` FOREIGN KEY (`classroom_id`) REFERENCES `base_classroom` (`id`),
+  CONSTRAINT `base_classroom_subjects_subject_id_29177de5_fk_base_subject_id` FOREIGN KEY (`subject_id`) REFERENCES `base_subject` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `base_classroom_subjects`
+--
+
+LOCK TABLES `base_classroom_subjects` WRITE;
+/*!40000 ALTER TABLE `base_classroom_subjects` DISABLE KEYS */;
+INSERT INTO `base_classroom_subjects` VALUES (1,1,1),(2,1,2);
+/*!40000 ALTER TABLE `base_classroom_subjects` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `base_message`
+--
+
+DROP TABLE IF EXISTS `base_message`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `base_message` (
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `content` longtext NOT NULL,
+  `created_at` datetime(6) NOT NULL,
+  `updated_at` datetime(6) NOT NULL,
+  `class_room_id` bigint NOT NULL,
+  `user_id` bigint NOT NULL,
+  `subject_id` bigint NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `base_message_class_room_id_6c21fa7d_fk_base_classroom_id` (`class_room_id`),
+  KEY `base_message_user_id_46a57e37_fk_base_person_id` (`user_id`),
+  KEY `base_message_subject_id_a2b97f42_fk_base_subject_id` (`subject_id`),
+  CONSTRAINT `base_message_class_room_id_6c21fa7d_fk_base_classroom_id` FOREIGN KEY (`class_room_id`) REFERENCES `base_classroom` (`id`),
+  CONSTRAINT `base_message_subject_id_a2b97f42_fk_base_subject_id` FOREIGN KEY (`subject_id`) REFERENCES `base_subject` (`id`),
+  CONSTRAINT `base_message_user_id_46a57e37_fk_base_person_id` FOREIGN KEY (`user_id`) REFERENCES `base_person` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `base_message`
+--
+
+LOCK TABLES `base_message` WRITE;
+/*!40000 ALTER TABLE `base_message` DISABLE KEYS */;
+INSERT INTO `base_message` VALUES (1,'hello','2024-03-01 22:40:10.115017','2024-03-01 22:40:10.115017',1,1,2),(2,'try again','2024-03-01 22:40:23.677098','2024-03-01 22:40:23.677098',1,1,2),(3,'jb;guS;OG','2024-03-01 22:41:19.735899','2024-03-01 22:41:19.735899',1,1,2),(4,'welcome Lethabo','2024-03-01 22:41:26.436837','2024-03-01 22:41:26.436837',1,1,2),(5,'hello gerre','2024-03-01 22:43:37.207066','2024-03-01 22:43:37.207066',1,4,2),(6,'here too','2024-03-01 22:50:56.066363','2024-03-01 22:50:56.067117',1,5,2),(7,'testing','2024-03-01 23:22:48.348885','2024-03-01 23:22:48.348885',1,1,1);
+/*!40000 ALTER TABLE `base_message` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `base_notification`
+--
+
+DROP TABLE IF EXISTS `base_notification`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `base_notification` (
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `title` varchar(255) NOT NULL,
+  `content` longtext NOT NULL,
+  `notification_group` varchar(25) NOT NULL,
+  `created_at` datetime(6) NOT NULL,
+  `updated_at` datetime(6) NOT NULL,
+  `user_id` bigint NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `base_notification_user_id_09cc7a96_fk_base_person_id` (`user_id`),
+  CONSTRAINT `base_notification_user_id_09cc7a96_fk_base_person_id` FOREIGN KEY (`user_id`) REFERENCES `base_person` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `base_notification`
+--
+
+LOCK TABLES `base_notification` WRITE;
+/*!40000 ALTER TABLE `base_notification` DISABLE KEYS */;
+INSERT INTO `base_notification` VALUES (3,'new title','dgjazdthdthed','educators','2024-03-01 14:37:25.206815','2024-03-01 14:37:25.206815',1),(4,'New Title','sdfjsrjdsj','educators','2024-03-01 23:40:51.466104','2024-03-01 23:40:51.466104',1),(5,'also added','thank you all for this','educators','2024-03-01 23:41:10.816524','2024-03-01 23:41:10.816524',1),(7,'added another one1','welome all for this','educators','2024-03-02 00:01:35.901284','2024-03-02 00:01:35.901284',1);
+/*!40000 ALTER TABLE `base_notification` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `base_person`
+--
+
+DROP TABLE IF EXISTS `base_person`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `base_person` (
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `password` varchar(128) NOT NULL,
+  `last_login` datetime(6) DEFAULT NULL,
+  `is_superuser` tinyint(1) NOT NULL,
+  `username` varchar(150) NOT NULL,
+  `date_joined` datetime(6) NOT NULL,
+  `first_name` varchar(50) NOT NULL,
+  `last_name` varchar(50) NOT NULL,
+  `email` varchar(254) NOT NULL,
+  `gender` varchar(10) NOT NULL,
+  `bio` longtext NOT NULL,
+  `user_type` varchar(20) NOT NULL,
+  `race` varchar(50) NOT NULL,
+  `date_of_birth` date DEFAULT NULL,
+  `contact_number` varchar(15) NOT NULL,
+  `emergency_contact` varchar(15) NOT NULL,
+  `profile_picture` varchar(100) DEFAULT NULL,
+  `is_staff` tinyint(1) NOT NULL,
+  `is_active` tinyint(1) NOT NULL,
+  `created_at` datetime(6) NOT NULL,
+  `updated_at` datetime(6) NOT NULL,
+  `my_class_id` bigint DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `username` (`username`),
+  UNIQUE KEY `email` (`email`),
+  KEY `base_person_my_class_id_53959177_fk_base_classroom_id` (`my_class_id`),
+  CONSTRAINT `base_person_my_class_id_53959177_fk_base_classroom_id` FOREIGN KEY (`my_class_id`) REFERENCES `base_classroom` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `base_person`
+--
+
+LOCK TABLES `base_person` WRITE;
+/*!40000 ALTER TABLE `base_person` DISABLE KEYS */;
+INSERT INTO `base_person` VALUES (1,'pbkdf2_sha256$720000$uRHubpbVd02fbmkFBtUsPP$iPSw+sfJPm1/CXVbTtoq5iniKcnsvuSBohJr95LaIqI=','2024-03-02 00:21:57.020224',1,'Gerre_AMG','2024-03-01 02:08:50.000000','Gerson','Antonio','gerson@gmail.com','Male','I AM THE SOFTWARE ENGINEER THAT IS CODING ALL OF THIS TOGETHER','educator','Black','2024-03-19','+27823908333','+27672515336','',1,1,'2024-03-01 02:08:51.882696','2024-03-01 22:46:35.493558',1),(2,'Password@99','2024-03-01 02:11:55.000000',0,'EJ','2024-03-01 02:10:00.000000','Mechac 2','Antonio','mechac@gmail.com','Male','this is my Bio','student','Other','2024-03-19','+27823908333','+27672515336','',0,1,'2024-03-01 02:11:55.964441','2024-03-01 22:45:28.273073',1),(3,'Password@99','2024-03-01 10:51:59.000000',1,'papa-ej','2024-03-01 10:51:59.000000','Mechac','Antonio','mechac2@gmail.com','Male','My name is as you see above and i am a QA','student','Other','2024-02-14','+27823908333','+27672515336','',1,1,'2024-03-01 10:51:59.670253','2024-03-01 11:36:59.361115',1),(4,'pbkdf2_sha256$720000$skclexbRA50QRaoZeO5jPs$tT6s81f5tKEg8sxzSKBSx8EQy4y8YCwv7pE4jSt1vzQ=','2024-03-01 22:41:47.000000',1,'LMF_47','2024-03-01 12:02:23.000000','Lethabo','Ncube','lethabo@gmail.com','Male','Hi there my name is Lethabo and i drive a Polo..','student','Asian','2024-03-01','+27823908333','+27672515336','',1,1,'2024-03-01 12:02:24.281032','2024-03-01 22:47:30.036367',1),(5,'Password@99','2024-03-01 22:49:41.414357',0,'salem27','2024-03-01 22:49:41.000000','Salem','Antonio','salem@gmail.com','Male','this is the bio for salem...','student','Asian','1990-04-28','+27823908333','+27672515336','',0,1,'2024-03-01 22:49:41.394098','2024-03-01 22:50:27.801506',1);
+/*!40000 ALTER TABLE `base_person` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `base_person_groups`
+--
+
+DROP TABLE IF EXISTS `base_person_groups`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `base_person_groups` (
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `person_id` bigint NOT NULL,
+  `group_id` int NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `base_person_groups_person_id_group_id_25b6ca84_uniq` (`person_id`,`group_id`),
+  KEY `base_person_groups_group_id_0f6cb3ec_fk_auth_group_id` (`group_id`),
+  CONSTRAINT `base_person_groups_group_id_0f6cb3ec_fk_auth_group_id` FOREIGN KEY (`group_id`) REFERENCES `auth_group` (`id`),
+  CONSTRAINT `base_person_groups_person_id_849b9fb3_fk_base_person_id` FOREIGN KEY (`person_id`) REFERENCES `base_person` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `base_person_groups`
+--
+
+LOCK TABLES `base_person_groups` WRITE;
+/*!40000 ALTER TABLE `base_person_groups` DISABLE KEYS */;
+/*!40000 ALTER TABLE `base_person_groups` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `base_person_subjects`
+--
+
+DROP TABLE IF EXISTS `base_person_subjects`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `base_person_subjects` (
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `person_id` bigint NOT NULL,
+  `subject_id` bigint NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `base_person_subjects_person_id_subject_id_359d88fa_uniq` (`person_id`,`subject_id`),
+  KEY `base_person_subjects_subject_id_c7f5a8cd_fk_base_subject_id` (`subject_id`),
+  CONSTRAINT `base_person_subjects_person_id_33139870_fk_base_person_id` FOREIGN KEY (`person_id`) REFERENCES `base_person` (`id`),
+  CONSTRAINT `base_person_subjects_subject_id_c7f5a8cd_fk_base_subject_id` FOREIGN KEY (`subject_id`) REFERENCES `base_subject` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `base_person_subjects`
+--
+
+LOCK TABLES `base_person_subjects` WRITE;
+/*!40000 ALTER TABLE `base_person_subjects` DISABLE KEYS */;
+INSERT INTO `base_person_subjects` VALUES (1,1,1),(2,1,2),(5,2,1),(6,2,2),(3,4,1),(4,4,2);
+/*!40000 ALTER TABLE `base_person_subjects` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `base_person_user_permissions`
+--
+
+DROP TABLE IF EXISTS `base_person_user_permissions`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `base_person_user_permissions` (
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `person_id` bigint NOT NULL,
+  `permission_id` int NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `base_person_user_permiss_person_id_permission_id_5eb9cebb_uniq` (`person_id`,`permission_id`),
+  KEY `base_person_user_per_permission_id_922727f5_fk_auth_perm` (`permission_id`),
+  CONSTRAINT `base_person_user_per_permission_id_922727f5_fk_auth_perm` FOREIGN KEY (`permission_id`) REFERENCES `auth_permission` (`id`),
+  CONSTRAINT `base_person_user_per_person_id_65fb84c8_fk_base_pers` FOREIGN KEY (`person_id`) REFERENCES `base_person` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `base_person_user_permissions`
+--
+
+LOCK TABLES `base_person_user_permissions` WRITE;
+/*!40000 ALTER TABLE `base_person_user_permissions` DISABLE KEYS */;
+/*!40000 ALTER TABLE `base_person_user_permissions` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `base_post`
+--
+
+DROP TABLE IF EXISTS `base_post`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `base_post` (
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `title` varchar(100) DEFAULT NULL,
+  `post_body` longtext NOT NULL,
+  `picture` varchar(100) DEFAULT NULL,
+  `media` varchar(100) DEFAULT NULL,
+  `created_at` datetime(6) NOT NULL,
+  `updated_at` datetime(6) NOT NULL,
+  `user_id` bigint NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `base_post_user_id_e11b3279_fk_base_person_id` (`user_id`),
+  CONSTRAINT `base_post_user_id_e11b3279_fk_base_person_id` FOREIGN KEY (`user_id`) REFERENCES `base_person` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `base_post`
+--
+
+LOCK TABLES `base_post` WRITE;
+/*!40000 ALTER TABLE `base_post` DISABLE KEYS */;
+INSERT INTO `base_post` VALUES (1,'welcome once again','gerre was here','','','2024-03-01 23:09:38.772660','2024-03-01 23:56:47.275679',5),(2,'fitfi','thank you for this','','','2024-03-01 23:22:40.612432','2024-03-01 23:56:44.303246',1);
+/*!40000 ALTER TABLE `base_post` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `base_subject`
+--
+
+DROP TABLE IF EXISTS `base_subject`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `base_subject` (
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `title` varchar(255) NOT NULL,
+  `description` longtext NOT NULL,
+  `created_at` datetime(6) NOT NULL,
+  `updated_at` datetime(6) NOT NULL,
+  `room_id` bigint NOT NULL,
+  `teacher_id` bigint DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `base_subject_room_id_18cae343_fk_base_classroom_id` (`room_id`),
+  KEY `base_subject_teacher_id_55855e72_fk_base_person_id` (`teacher_id`),
+  CONSTRAINT `base_subject_room_id_18cae343_fk_base_classroom_id` FOREIGN KEY (`room_id`) REFERENCES `base_classroom` (`id`),
+  CONSTRAINT `base_subject_teacher_id_55855e72_fk_base_person_id` FOREIGN KEY (`teacher_id`) REFERENCES `base_person` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `base_subject`
+--
+
+LOCK TABLES `base_subject` WRITE;
+/*!40000 ALTER TABLE `base_subject` DISABLE KEYS */;
+INSERT INTO `base_subject` VALUES (1,'Math 12','the math class of 2024','2024-03-01 02:13:47.684163','2024-03-01 11:05:31.869759',1,1),(2,'English 12','the English class of 2024','2024-03-01 02:14:22.837963','2024-03-01 11:05:37.105224',1,1);
+/*!40000 ALTER TABLE `base_subject` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `base_subject_participants`
+--
+
+DROP TABLE IF EXISTS `base_subject_participants`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `base_subject_participants` (
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `subject_id` bigint NOT NULL,
+  `person_id` bigint NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `base_subject_participants_subject_id_person_id_63cefb17_uniq` (`subject_id`,`person_id`),
+  KEY `base_subject_participants_person_id_461ff79c_fk_base_person_id` (`person_id`),
+  CONSTRAINT `base_subject_participants_person_id_461ff79c_fk_base_person_id` FOREIGN KEY (`person_id`) REFERENCES `base_person` (`id`),
+  CONSTRAINT `base_subject_participants_subject_id_c0334c21_fk_base_subject_id` FOREIGN KEY (`subject_id`) REFERENCES `base_subject` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `base_subject_participants`
+--
+
+LOCK TABLES `base_subject_participants` WRITE;
+/*!40000 ALTER TABLE `base_subject_participants` DISABLE KEYS */;
+INSERT INTO `base_subject_participants` VALUES (3,1,1),(4,1,2),(5,1,3),(8,1,5),(1,2,1),(2,2,2),(6,2,3),(7,2,5);
+/*!40000 ALTER TABLE `base_subject_participants` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `base_taskcompletion`
+--
+
+DROP TABLE IF EXISTS `base_taskcompletion`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `base_taskcompletion` (
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `is_done` tinyint(1) NOT NULL,
+  `score` int NOT NULL,
+  `created_at` datetime(6) NOT NULL,
+  `updated_at` datetime(6) NOT NULL,
+  `user_id` bigint NOT NULL,
+  `task_id` bigint NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `base_taskcompletion_user_id_a37604e7_fk_base_person_id` (`user_id`),
+  KEY `base_taskcompletion_task_id_acff397e_fk_base_todo_id` (`task_id`),
+  CONSTRAINT `base_taskcompletion_task_id_acff397e_fk_base_todo_id` FOREIGN KEY (`task_id`) REFERENCES `base_todo` (`id`),
+  CONSTRAINT `base_taskcompletion_user_id_a37604e7_fk_base_person_id` FOREIGN KEY (`user_id`) REFERENCES `base_person` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `base_taskcompletion`
+--
+
+LOCK TABLES `base_taskcompletion` WRITE;
+/*!40000 ALTER TABLE `base_taskcompletion` DISABLE KEYS */;
+INSERT INTO `base_taskcompletion` VALUES (1,0,0,'2024-03-01 11:07:03.565946','2024-03-01 11:07:03.565946',1,1),(2,0,0,'2024-03-01 11:07:03.573422','2024-03-01 11:07:03.573422',3,1),(3,0,0,'2024-03-01 11:07:03.579405','2024-03-01 11:07:03.579405',2,1),(4,0,0,'2024-03-01 14:32:17.170429','2024-03-01 14:32:17.170429',3,2),(5,0,50,'2024-03-01 14:32:17.177633','2024-03-01 14:32:42.437793',1,2),(6,0,0,'2024-03-01 14:32:17.181383','2024-03-01 14:32:17.181383',2,2),(7,0,0,'2024-03-01 23:42:24.129048','2024-03-01 23:42:24.129048',5,3),(8,0,0,'2024-03-01 23:42:24.135796','2024-03-01 23:42:24.135796',1,3),(9,0,0,'2024-03-01 23:42:24.141087','2024-03-01 23:42:24.141087',2,3),(10,0,0,'2024-03-01 23:42:24.146298','2024-03-01 23:42:24.146298',3,3);
+/*!40000 ALTER TABLE `base_taskcompletion` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `base_todo`
+--
+
+DROP TABLE IF EXISTS `base_todo`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `base_todo` (
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `title` varchar(255) NOT NULL,
+  `description` longtext NOT NULL,
+  `task_date` datetime(6) NOT NULL,
+  `created_at` datetime(6) NOT NULL,
+  `updated_at` datetime(6) NOT NULL,
+  `subject_id` bigint NOT NULL,
+  `user_id` bigint NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `base_todo_subject_id_bd9795b7_fk_base_subject_id` (`subject_id`),
+  KEY `base_todo_user_id_ad1a8aa2_fk_base_person_id` (`user_id`),
+  CONSTRAINT `base_todo_subject_id_bd9795b7_fk_base_subject_id` FOREIGN KEY (`subject_id`) REFERENCES `base_subject` (`id`),
+  CONSTRAINT `base_todo_user_id_ad1a8aa2_fk_base_person_id` FOREIGN KEY (`user_id`) REFERENCES `base_person` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `base_todo`
+--
+
+LOCK TABLES `base_todo` WRITE;
+/*!40000 ALTER TABLE `base_todo` DISABLE KEYS */;
+INSERT INTO `base_todo` VALUES (1,'Welcome to all Math students','This is just teh welcome message into this beautiful class, please take your time and complete your profile before continuing any further','2024-03-06 00:00:00.000000','2024-03-01 11:07:03.552400','2024-03-01 11:07:03.552400',1,1),(2,'\\shsfnzsfnbh','zsfhbzshe','2024-03-06 00:00:00.000000','2024-03-01 14:32:17.156783','2024-03-01 14:32:17.156783',1,1),(3,'creadted another one','For you alll that always want tot know the details that is entailed in the information that you recieve','2024-03-06 00:00:00.000000','2024-03-01 23:42:24.117795','2024-03-01 23:42:24.117795',1,1);
+/*!40000 ALTER TABLE `base_todo` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `django_admin_log`
+--
+
+DROP TABLE IF EXISTS `django_admin_log`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `django_admin_log` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `action_time` datetime(6) NOT NULL,
+  `object_id` longtext,
+  `object_repr` varchar(200) NOT NULL,
+  `action_flag` smallint unsigned NOT NULL,
+  `change_message` longtext NOT NULL,
+  `content_type_id` int DEFAULT NULL,
+  `user_id` bigint NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `django_admin_log_content_type_id_c4bce8eb_fk_django_co` (`content_type_id`),
+  KEY `django_admin_log_user_id_c564eba6_fk_base_person_id` (`user_id`),
+  CONSTRAINT `django_admin_log_content_type_id_c4bce8eb_fk_django_co` FOREIGN KEY (`content_type_id`) REFERENCES `django_content_type` (`id`),
+  CONSTRAINT `django_admin_log_user_id_c564eba6_fk_base_person_id` FOREIGN KEY (`user_id`) REFERENCES `base_person` (`id`),
+  CONSTRAINT `django_admin_log_chk_1` CHECK ((`action_flag` >= 0))
+) ENGINE=InnoDB AUTO_INCREMENT=22 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `django_admin_log`
+--
+
+LOCK TABLES `django_admin_log` WRITE;
+/*!40000 ALTER TABLE `django_admin_log` DISABLE KEYS */;
+INSERT INTO `django_admin_log` VALUES (1,'2024-03-01 02:13:10.198447','1','Grade 12',1,'[{\"added\": {}}]',7,1),(2,'2024-03-01 02:13:47.689415','1','Math 12',1,'[{\"added\": {}}]',10,1),(3,'2024-03-01 02:14:22.844215','2','English 12',1,'[{\"added\": {}}]',10,1),(4,'2024-03-01 02:20:53.449074','2','mechac@gmail.com',2,'[{\"changed\": {\"fields\": [\"Gender\", \"My class\", \"Emergency contact\"]}}]',6,1),(5,'2024-03-01 02:21:12.922471','2','mechac@gmail.com',2,'[]',6,1),(6,'2024-03-01 10:27:36.562031','1','Grade 12',2,'[{\"changed\": {\"fields\": [\"Participants\", \"Subjects\"]}}]',7,1),(7,'2024-03-01 10:36:43.269865','1','Grade 12',2,'[]',7,1),(8,'2024-03-01 10:36:58.189087','2','English 12',2,'[{\"changed\": {\"fields\": [\"Participants\"]}}]',10,1),(9,'2024-03-01 10:37:07.605687','1','Math 12',2,'[{\"changed\": {\"fields\": [\"Participants\"]}}]',10,1),(10,'2024-03-01 11:04:55.237652','1','gerson@gmail.com',2,'[{\"changed\": {\"fields\": [\"Username\", \"First name\", \"Last name\", \"Gender\", \"Bio\", \"My class\", \"User type\", \"Race\", \"Date of birth\", \"Contact number\", \"Emergency contact\", \"Subjects\"]}}]',6,1),(11,'2024-03-01 11:05:31.880258','1','Math 12',2,'[{\"changed\": {\"fields\": [\"Teacher\"]}}]',10,1),(12,'2024-03-01 11:05:37.108980','2','English 12',2,'[{\"changed\": {\"fields\": [\"Teacher\"]}}]',10,1),(13,'2024-03-01 11:09:02.642517','3','mechac2@gmail.com',2,'[{\"changed\": {\"fields\": [\"Superuser status\", \"Is staff\"]}}]',6,1),(14,'2024-03-01 11:36:59.371640','3','mechac2@gmail.com',2,'[]',6,1),(15,'2024-03-01 14:32:42.442290','5','gerson@gmail.com - \\shsfnzsfnbh',2,'[{\"changed\": {\"fields\": [\"Score\"]}}]',13,1),(16,'2024-03-01 22:43:23.060337','4','Lethabo',2,'[{\"changed\": {\"fields\": [\"Username\", \"First name\", \"Last name\", \"Gender\", \"Bio\", \"My class\", \"User type\", \"Race\", \"Contact number\", \"Emergency contact\", \"Subjects\"]}}]',6,4),(17,'2024-03-01 22:44:26.681149','4','Lethabo',2,'[{\"changed\": {\"fields\": [\"Date of birth\"]}}]',6,4),(18,'2024-03-01 22:45:28.286086','2','Mechac 2',2,'[{\"changed\": {\"fields\": [\"First name\", \"Last name\", \"Bio\", \"Date of birth\", \"Subjects\"]}}]',6,4),(19,'2024-03-01 22:46:35.504059','1','Gerson',2,'[{\"changed\": {\"fields\": [\"User type\"]}}]',6,4),(20,'2024-03-01 23:56:44.307003','2','fitfi - Gerson',2,'[{\"changed\": {\"fields\": [\"Post body\"]}}]',9,1),(21,'2024-03-01 23:56:47.280176','1','welcome once again - Salem',2,'[]',9,1);
+/*!40000 ALTER TABLE `django_admin_log` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `django_content_type`
+--
+
+DROP TABLE IF EXISTS `django_content_type`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `django_content_type` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `app_label` varchar(100) NOT NULL,
+  `model` varchar(100) NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `django_content_type_app_label_model_76bd3d3b_uniq` (`app_label`,`model`)
+) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `django_content_type`
+--
+
+LOCK TABLES `django_content_type` WRITE;
+/*!40000 ALTER TABLE `django_content_type` DISABLE KEYS */;
+INSERT INTO `django_content_type` VALUES (1,'admin','logentry'),(3,'auth','group'),(2,'auth','permission'),(7,'base','classroom'),(11,'base','message'),(8,'base','notification'),(6,'base','person'),(9,'base','post'),(10,'base','subject'),(13,'base','taskcompletion'),(12,'base','todo'),(4,'contenttypes','contenttype'),(5,'sessions','session');
+/*!40000 ALTER TABLE `django_content_type` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `django_migrations`
+--
+
+DROP TABLE IF EXISTS `django_migrations`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `django_migrations` (
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `app` varchar(255) NOT NULL,
+  `name` varchar(255) NOT NULL,
+  `applied` datetime(6) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=23 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `django_migrations`
+--
+
+LOCK TABLES `django_migrations` WRITE;
+/*!40000 ALTER TABLE `django_migrations` DISABLE KEYS */;
+INSERT INTO `django_migrations` VALUES (1,'contenttypes','0001_initial','2024-03-01 01:58:48.022757'),(2,'contenttypes','0002_remove_content_type_name','2024-03-01 01:58:48.145754'),(3,'auth','0001_initial','2024-03-01 01:58:48.522491'),(4,'auth','0002_alter_permission_name_max_length','2024-03-01 01:58:48.624517'),(5,'auth','0003_alter_user_email_max_length','2024-03-01 01:58:48.633518'),(6,'auth','0004_alter_user_username_opts','2024-03-01 01:58:48.644018'),(7,'auth','0005_alter_user_last_login_null','2024-03-01 01:58:48.659018'),(8,'auth','0006_require_contenttypes_0002','2024-03-01 01:58:48.665015'),(9,'auth','0007_alter_validators_add_error_messages','2024-03-01 01:58:48.676280'),(10,'auth','0008_alter_user_username_max_length','2024-03-01 01:58:48.692021'),(11,'auth','0009_alter_user_last_name_max_length','2024-03-01 01:58:48.707779'),(12,'auth','0010_alter_group_name_max_length','2024-03-01 01:58:48.750518'),(13,'auth','0011_update_proxy_permissions','2024-03-01 01:58:48.767017'),(14,'auth','0012_alter_user_first_name_max_length','2024-03-01 01:58:48.781266'),(15,'base','0001_initial','2024-03-01 01:58:52.471985'),(16,'admin','0001_initial','2024-03-01 01:58:52.777231'),(17,'admin','0002_logentry_remove_auto_add','2024-03-01 01:58:52.814730'),(18,'admin','0003_logentry_add_action_flag_choices','2024-03-01 01:58:52.862733'),(19,'sessions','0001_initial','2024-03-01 01:58:52.959484'),(20,'base','0002_alter_person_managers','2024-03-01 02:08:09.027811'),(21,'base','0003_remove_person_user_name','2024-03-01 10:46:57.006039'),(22,'base','0004_alter_post_post_body','2024-03-01 23:57:30.544267');
+/*!40000 ALTER TABLE `django_migrations` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `django_session`
+--
+
+DROP TABLE IF EXISTS `django_session`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `django_session` (
+  `session_key` varchar(40) NOT NULL,
+  `session_data` longtext NOT NULL,
+  `expire_date` datetime(6) NOT NULL,
+  PRIMARY KEY (`session_key`),
+  KEY `django_session_expire_date_a5c62663` (`expire_date`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `django_session`
+--
+
+LOCK TABLES `django_session` WRITE;
+/*!40000 ALTER TABLE `django_session` DISABLE KEYS */;
+INSERT INTO `django_session` VALUES ('7z73qx4fk3powlw5ya1lser3nefzbgf2','e30:1rfsNP:Tq7EB507-FlOD-wrndZgPc23GUSmqMyk5N2gX2TCw6Y','2024-03-15 02:11:55.972635'),('bn5n5k2a5aej64nby2n64o8i7wzvh42s','.eJxVjMEOwiAQRP-FsyEuZbF49N5vaBZ2kaqBpLQn47_bJj3oZQ7z3sxbjbQueVybzOPE6qpAnX67QPEpZQf8oHKvOtayzFPQu6IP2vRQWV63w_07yNTythZjUhJC9ig2RQrcYSdoJV4sEDn0W3AE77wjlJ6QxPRkARLyGVB9vhhZOL4:1rgD8X:rwykLD3aDLQOEtJil3PMhQdKn2ZnpMfGqMT5LSXHVDc','2024-03-16 00:21:57.024719');
+/*!40000 ALTER TABLE `django_session` ENABLE KEYS */;
+UNLOCK TABLES;
+/*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
+
+/*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
+/*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
+/*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */;
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+/*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
+
+-- Dump completed on 2024-03-02  2:54:35

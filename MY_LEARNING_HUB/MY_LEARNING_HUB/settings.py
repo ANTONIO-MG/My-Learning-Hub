@@ -31,8 +31,27 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    
+    # added the dbbackup to backup my databases
+    'dbbackup',
+    # base is the main project that i am holding all the tasks
     'base',
+    # this is the app that restores the save data from the backups
+    'django_crontab',
+]
+
+
+DBBACKUP_STORAGE = 'django.core.files.storage.FileSystemStorage'
+DBBACKUP_STORAGE_OPTIONS = {'location': BASE_DIR / 'backup'}
+
+CRONJOBS = [
+    # change the number to change teh backup frequency in minutes
+    ('*/10 * * * *', 'base.cron.my_backup')
+    # please run teh following commands to get it working
+    # python manage.py crondb start : start crontab
+    # python manage.py db restore : restore to teh latest version of the database
+    # python manage.py crontab add : add the current backup task
+    # service cron restart  (on ubuntu)
+    # python manage.py crondb show: show all teh currently active tasks
 ]
 
 MIDDLEWARE = [
