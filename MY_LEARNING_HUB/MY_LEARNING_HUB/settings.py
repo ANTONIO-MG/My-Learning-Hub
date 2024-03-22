@@ -37,6 +37,17 @@ INSTALLED_APPS = [
     'base',
     # this is the app that restores the save data from the backups
     'django_crontab',
+
+    # the allauth authentication
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+    'allauth.socialaccount.providers.google',
+    # clean up the duplicate files with teh following library
+    'django_cleanup.apps.CleanupConfig',
+    # python library for cellphone number fields
+    "phonenumber_field",
+    
 ]
 
 
@@ -62,9 +73,33 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    
+    # Add the account middleware:
+    "allauth.account.middleware.AccountMiddleware",
 ]
 
 ROOT_URLCONF = 'MY_LEARNING_HUB.urls'
+
+AUTHENTICATION_BACKENDS = [
+    # Needed to login by username in Django admin, regardless of `allauth`
+    'django.contrib.auth.backends.ModelBackend',
+
+    # `allauth` specific authentication methods, such as login by email
+    'allauth.account.auth_backends.AuthenticationBackend',
+]
+
+SITE_ID = 1  # Add this if not already present, setting the ID of the current site
+
+# Django Allauth settings
+ACCOUNT_USER_MODEL_USERNAME_FIELD = None
+ACCOUNT_AUTHENTICATION_METHOD = 'email'
+ACCOUNT_EMAIL_REQUIRED = True
+ACCOUNT_UNIQUE_EMAIL = True
+ACCOUNT_USERNAME_REQUIRED = False
+ACCOUNT_CHANGE_EMAIL = True
+ACCOUNT_EMAIL_VERIFICATION = "mandatory"
+
+
 
 TEMPLATES = [
     {
@@ -136,4 +171,10 @@ MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 # Default primary key field type
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-AUTH_USER_MODEL = 'base.Person'
+# AUTH_USER_MODEL = 'base.Person'
+
+# configure the different social accounts that you can authenticate by
+SOCIALACCOUNT_PROVIDERS = {}
+
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+

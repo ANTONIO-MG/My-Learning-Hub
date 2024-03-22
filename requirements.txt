@@ -1,0 +1,10 @@
+Django
+pillow
+django-cleanup
+django-allauth
+djangorestframework
+django-htmx
+django-crontab
+django-dbbackup
+django-phonenumber-field[phonenumberslite]
+django-phonenumber-field[phonenumbers]
