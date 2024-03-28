@@ -14,14 +14,11 @@ urlpatterns = [
     
     
     # this are the basic user URL's
-    # path('home', views.Home, name="home"),
-    # path('register', views.Register, name="register"),
+    path('home/', views.Home, name="home"),
+    path('register/', views.Register, name="register"),
     # path('login', views.Login, name="login"),
     # path('logout', views.Logout, name="logout"),
     # path('todo', views.ToDo, name="todo"),
-    # path('about', views.About, name="about"),
-    # path('contact', views.ContactUs, name="contact"),
-    # path('report', views.Report, name="report"),
     
     # # Here are the classroom URL's
     # path('class/<str:pk>', views.MyClass, name="class"),
@@ -49,8 +46,8 @@ urlpatterns = [
     
     # # Here are the profile URL's
     # path('subject/<str:pk>', views.MySubject, name="subject"),
-    # path('profile/<str:pk>', views.Profile, name="profile"),
-    # path('edit_profile/<str:pk>', views.EditProfile, name="edit_profile"),
+    path('profile/<str:pk>', views.Profile, name="profile"),
+    path('edit_profile/<str:pk>', views.EditProfile, name="edit_profile"),
     
     # # Here are the posts URL's
     # path('post/<str:pk>', views.MyPost, name="post"),

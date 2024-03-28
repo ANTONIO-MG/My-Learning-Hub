@@ -1,57 +1,80 @@
-{% extends 'main.html' %}
-{% block content %}
+{% load static %}
 
-<style>
-    .form {
-        max-height: 500px;
-        overflow-y: auto;
-    }
+<!DOCTYPE html>
+<html lang="en">
 
-</style>
-<main class="update-account layout">
-    <div class="container">
-        <div class="layout__box">
-            <div class="layout__boxHeader">
-                <div class="layout__boxTitle">
-                    <a href="{{request.META.HTTP_REFERER}}">
-                        <svg version="1.1" xmlns="http://www.w3.org/2000/svg" width="32" height="32"
-                            viewBox="0 0 32 32">
-                            <title>arrow-left</title>
-                            <path
-                                d="M13.723 2.286l-13.723 13.714 13.719 13.714 1.616-1.611-10.96-10.96h27.625v-2.286h-27.625l10.965-10.965-1.616-1.607z">
-                            </path>
-                        </svg>
-                    </a>
-                    <h3>Register New User</h3>
-                </div>
-            </div>
-            <div class="layout__body">
-                <form class="form" action="" method="POST">
-                    {% csrf_token %}
-                    {% for field in form %}
-                    <div class="form__group">
-                        <label for="username">
-                            {{field.label}}
-                        </label>
-                        {{field}}
-                    </div>
-                    {% endfor %}
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
 
-                    <div class="form__action">
-                        <a class="btn btn--dark" href="{% url 'login' %}">Cancel</a>
-                        <button class="btn btn--main" type="submit">SignUp</button>
-                    </div>
-                    <h2>
-                        Already Have An Account?
-                    </h2>
-                    <h1>
-                        <a href="{% url 'login' %}">Login!</a>
-                    </h1>
-                </form>
-            </div>
+    <title>My Learning Hub | Register</title>
+
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="{% static 'plugins/fontawesome-free/css/all.min.css' %}">
+    <!-- overlayScrollbars -->
+    <link rel="stylesheet" href="{% static 'plugins/overlayScrollbars/css/OverlayScrollbars.min.css' %}">
+    <!-- Theme style -->
+    <link rel="stylesheet" href="{% static 'dist/css/adminlte.min.css' %}">
+    <!-- Google Font: Source Sans Pro -->
+    <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700" rel="stylesheet">
+
+<body class="hold-transition register-page">
+    <div class="register-box">
+        <div class="register-logo">
+            <a href="#"><b>My Learning Hub</b></a>
         </div>
-    </div>
-    </div>
-</main>
 
-{% endblock content %}
+        <div class="card">
+            <div class="card-body register-card-body">
+                <p class="login-box-msg">Register a new membership</p>
+
+                <form action="#" method="post">
+                    {% csrf_token %}
+                    {{ form.as_p }}
+                    <input type="submit">
+                </form>
+
+                <div class="social-auth-links text-center">
+                    <p>- OR -</p>
+                    <a href="#" class="btn btn-block btn-primary">
+                        <i class="fab fa-facebook mr-2"></i>
+                        Sign up using Facebook
+                    </a>
+                    <a href="#" class="btn btn-block btn-danger">
+                        <i class="fab fa-google-plus mr-2"></i>
+                        Sign up using Google+
+                    </a>
+                </div>
+
+                <a href="#" class="text-center">I already have a membership</a>
+            </div>
+            <!-- /.form-box -->
+        </div><!-- /.card -->
+    </div>
+    <!-- /.register-box -->
+
+    <!-- REQUIRED SCRIPTS -->
+    <!-- jQuery -->
+    <script src="{% static 'plugins/jquery/jquery.min.js' %}"></script>
+    <!-- Bootstrap -->
+    <script src="{% static 'plugins/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+    <!-- overlayScrollbars -->
+    <script src="{% static 'plugins/overlayScrollbars/js/jquery.overlayScrollbars.min.js' %}"></script>
+    <!-- AdminLTE App -->
+    <script src="{% static 'dist/js/adminlte.js' %}"></script>
+    <!-- OPTIONAL SCRIPTS -->
+    <script src="{% static 'dist/js/demo.js' %}"></script>
+    <!-- PAGE PLUGINS -->
+    <!-- jQuery Mapael -->
+    <script src="{% static 'plugins/jquery-mousewheel/jquery.mousewheel.js' %}"></script>
+    <script src="{% static 'plugins/raphael/raphael.min.js' %}"></script>
+    <script src="{% static 'plugins/jquery-mapael/jquery.mapael.min.js' %}"></script>
+    <script src="{% static 'plugins/jquery-mapael/maps/usa_states.min.js' %}"></script>
+    <!-- ChartJS -->
+    <script src="{% static 'plugins/chart.js/Chart.min.js' %}"></script>
+    <!-- PAGE SCRIPTS -->
+    <script src="{% static 'dist/js/pages/dashboard2.js' %}"></script>
+</body>
+
+</html>

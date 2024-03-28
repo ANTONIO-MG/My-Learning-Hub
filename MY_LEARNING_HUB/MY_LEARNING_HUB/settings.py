@@ -19,7 +19,7 @@ SECRET_KEY = 'django-insecure-*3j*(2(hpdvrr^7aqw!(8k7a05sv^i%s0ty6dys!cr+a^zm(rg
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', '[::1]']
 
 
 # Application definition
@@ -91,13 +91,24 @@ AUTHENTICATION_BACKENDS = [
 SITE_ID = 1  # Add this if not already present, setting the ID of the current site
 
 # Django Allauth settings
-ACCOUNT_USER_MODEL_USERNAME_FIELD = None
 ACCOUNT_AUTHENTICATION_METHOD = 'email'
 ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_UNIQUE_EMAIL = True
 ACCOUNT_USERNAME_REQUIRED = False
 ACCOUNT_CHANGE_EMAIL = True
-ACCOUNT_EMAIL_VERIFICATION = "mandatory"
+ACCOUNT_EMAIL_VERIFICATION = 'mandatory'
+ACCOUNT_LOGOUT_REDIRECT_URL = '/accounts/login/'
+LOGOUT_REDIRECT_URL = '/accounts/login/'
+ACCOUNT_EMAIL_CONFIRMATION_AUTHENTICATED_REDIRECT_URL = 'http://localhost:8000/register/'
+
+
+
+LOGIN_REDIRECT_URL = 'home'
+ACCOUNT_LOGIN_ON_EMAIL_CONFIRMATION= True 
+ACCOUNT_LOGOUT_ON_GET=True 
+ACCOUNT_SIGNUP_REDIRECT_URL = 'register/'
+
+
 
 
 
