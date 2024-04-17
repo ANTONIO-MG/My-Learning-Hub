@@ -6,5 +6,6 @@ djangorestframework
 django-htmx
 django-crontab
 django-dbbackup
+crispy-bootstrap4
 django-phonenumber-field[phonenumberslite]
 django-phonenumber-field[phonenumbers]

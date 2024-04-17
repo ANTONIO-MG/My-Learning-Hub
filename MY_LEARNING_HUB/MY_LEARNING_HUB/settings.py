@@ -47,6 +47,8 @@ INSTALLED_APPS = [
     'django_cleanup.apps.CleanupConfig',
     # python library for cellphone number fields
     "phonenumber_field",
+    "crispy_forms",
+    "crispy_bootstrap4",
     
 ]
 
@@ -188,4 +190,8 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 SOCIALACCOUNT_PROVIDERS = {}
 
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+#CRISPY FORMS
+CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap4"
+CRISPY_TEMPLATE_PACK = "bootstrap4"
 
